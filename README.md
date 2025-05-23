@@ -6,7 +6,7 @@ Included are a collection of ImageJ Macros, Jython/Python scripts, and ilastik c
   - Steps 1-4:  raw data processing scripts for confocal ND2 file z-projection, cell body/nuclei segmentation and tracking, mask interpolation, and cell body/nuclei label-map matching
   - Steps 5-6:  example files for [ilastik's Pixel+Object classificaton](https://www.ilastik.org/documentation/) workflow for RhoBAST foci segmentation. Pixel classificaion file (Step 5) and TIF used for labeling are available upon request (file size exceeds limitation). 
   - Step 7:  Python script for compiling the nuclear Relish fraction and nuclear RhoBAST foci intensity for each cell across each time point.
-  - Step 8:  optional ImageJ macro for easy visualization and interactive sorting of all cells based on resulting masks for cytoplasm, nuclei, and RhoBAST foci (based on the criteria listed in Methods). 
+  - Step 8:  optional ImageJ macro for easy visualization and interactive sorting of all cells based on overlaid masks for cytoplasm, nuclei, and RhoBAST foci (based on the criteria listed in Methods). 
 
 Each step builds on the last, producing data and visualizations suitable for downstream analysis and figure plotting.     
 
