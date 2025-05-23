@@ -8,3 +8,5 @@
 - Scripts to run Support Vector Machine analysis of:
   - Relish spatiotemporal classification
   - Pre-stimulus predictive classification
+## [Figure Generation](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/Figure-Generation)
+- Scripts to plot figures from Python dictionaries produced in Image Analysis Pipeline
