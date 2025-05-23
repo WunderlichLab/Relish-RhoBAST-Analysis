@@ -15,14 +15,15 @@ Each step builds on the last, producing data and visualizations suitable for dow
 1. **Fiji/ImageJ** enabled with:
    -  CLIJ & CLIJ2 update sites
    -  [TrackMate-Cellpose](https://imagej.net/plugins/trackmate/detectors/trackmate-cellpose)
-3. **Python 3.8+** with the following packages:  
+2. **Python 3.8+** with the following packages:  
    - `numpy`  
    - `scipy`  
    - `scikit-image`  
    - `tifffile`  
    - `pandas`  
    - `microfilm` (for `microplot`)  
-   - `matplotlib`  
+   - `matplotlib`
+3. **ilastik** [interactive learning and segmentation toolkit](https://www.ilastik.org/)
 
 4. **Directory structure** (customize `allData` and `datasetName` in each script):
 ```text
