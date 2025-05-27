@@ -6,16 +6,15 @@ Created on Mon Feb 24 11:16:06 2025
 """
 import pandas as pd
 import seaborn as sns
-import tifffile as tf
-from tifffile import imread
-from tifffile import imshow
 import numpy as np
-import math
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from scipy.signal import savgol_filter
 import pickle
+import  microfilm.microplot
+from microfilm import microplot
+from microfilm.microplot import microshow, Micropanel
 import time
+import random
 from datetime import timedelta
 datetime_str = time.strftime("%m%d%y_%H:%M")
 
