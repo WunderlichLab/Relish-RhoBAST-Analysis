@@ -32,9 +32,6 @@ gitdir = 'G:/path/'
 files_import = gitdir+'Figure 2 Files/'
 fig_output = gitdir+'Temp Output/Fig 2/'
 
-resolution=  3.4756 #pixels per micron
-units_per_pix = 1/resolution
-
 plt.rcParams['font.family'] = 'Arial'
 labelfsize = 12
 fsize = 10
@@ -51,7 +48,7 @@ def import_data(file_path, object_name, file_type = ".pkl"):
     return object_data
 
 
-#%% Import Data------------------------------------------------------------------------------------------------------------------------------------
+#%% Import Data
 
 #import variables needed from clustering code to run SVM:
 subcluster_traces_smooth        = import_data(files_import, "goodcomp3_subcluster_traces_div_smooth")
@@ -255,7 +252,7 @@ figname = 'Classified Traces_treatment'
 savename = fig_output+'Fig2B_'+figname+'.png'
 fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
-#%% Fig 2A visualize sample trace classification characteristics------------------------------------------------------------------------------------------------------------------------------------
+#%% Fig 2A visualize sample trace classification characteristics
 figsize2 = (2.5, 1.9)  # Adjust the figure size to match a single plot
 
 cell_name = '100X Cell 20240801-3-98'
@@ -311,7 +308,7 @@ figname = 'Classification Labels'
 savename = fig_output+'Fig2A_'+figname+'.png'
 fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
-#%% Fig 2C Stacked bar plot------------------------------------------------------------------------------------------------------------------------------------
+#%% Fig 2C Stacked bar plot
 plot = "hor"
 figsize3_hor =  (3.5,1.6)
 figsize3_vert = (3,6)
@@ -479,7 +476,7 @@ elif plot == "hor":
     plt.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
 
-#%% Fig 2E Predictors Output------------------------------------------------------------------------------------------------------------------------------------
+#%% Fig 2E Predictors Output
 figsize5 = (3.52,2.23)
 
 num_categories = "imm"
