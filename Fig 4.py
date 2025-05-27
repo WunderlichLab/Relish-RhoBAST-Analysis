@@ -13,68 +13,33 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from matplotlib.cm import get_cmap
-import matplotlib.ticker as ticker
-import matplotlib.patches as patches
-import os
-from scipy import ndimage
 from scipy.signal import savgol_filter
-from skimage import measure
-import skimage.io
-from skimage.measure import label, regionprops
-from scipy.ndimage import label
-from scipy.ndimage import binary_dilation
-from scipy import stats
-from scipy.stats import ks_2samp
-from scipy.signal import savgol_filter
-from skimage.segmentation import mark_boundaries
-from skimage.feature.peak import peak_local_max
-from PIL import Image
 import pickle
-import  microfilm.microplot
-from microfilm import microplot
-from microfilm.microplot import microshow, Micropanel
-import gc
-import copy
-import datetime
 import time
-import random
 from datetime import timedelta
 datetime_str = time.strftime("%m%d%y_%H:%M")
 
-mac = '/Volumes/rkc_wunderlichLab/'
-PC = 'R:/'
-anacomp = 'Z:/'
+#!!! Update path file!!!
+gitdir = 'G:/path/' 
+#!!! Update path file!!!
 
-computer = anacomp
-
-resolution=  3.4756 #pixels per micron
-units_per_pix = 1/resolution
-nuc_channel = 0
-rel_channel = 1
-rb_channel = 2
-
-sg_factor_rel = 5   #5 for relish data
-sg_factor_rb = 8   #5 for relish data
-sg_order_rel  = 2   #Polynomial order for Savitzky–Golay smoothing
-
+files_import = gitdir+'Figure 4 Files/'
+fig_output = gitdir+'Temp Output/Fig 4/'
 
 plt.rcParams['font.family'] = 'Arial'
-
+labelfsize = 12
 fsize = 10
 tickfsize = 9
 mag = 1.2
 shrink = 0.78
 
-if computer == mac:
-    gdrive = '/Users/noshin/Library/CloudStorage/GoogleDrive-noshin@bu.edu/Shared drives/Wunderlich Lab/People/Noshin/'
-else:
-    gdrive = 'G:/Shared drives/Wunderlich Lab/People/Noshin/'
+sg_factor_rel = 5   #5 for relish data
+sg_factor_rb = 8   #5 for relish data
+sg_order_rel  = 2   #Polynomial order for Savitzky–Golay smoothing
 
-fig_output = gdrive+'Paper/Figures/'
+resolution=  3.4756 #pixels per micron
+units_per_pix = 1/resolution
 
-
-interval_forplt = np.concatenate([np.arange(0, 121, 15) , np.arange(150, 631, 30), np.arange(690, 971, 60)])
 
 def flatten_trace_df(subcluster_traces_smooth):
     """
@@ -116,62 +81,27 @@ def flatten_trace_df(subcluster_traces_smooth):
     
     return all_data_df
 
+def import_data(file_path, object_name, file_type = ".pkl"):   
+    full_file_path = file_path + "/" + object_name + file_type
+    # print(full_file_path)
+    with open(full_file_path, "rb") as f:
+        object_data = pickle.load(f)
+        
+    return object_data
 
-#%%  Plot classification of traces of rhobast data
+#%% Import Data
+peaks_dict_flat                    = import_data(files_import+'SVM results/', "goodcomp7_rb_AMP_peaks_dict_flat")
+subcluster_traces_smooth           = import_data(files_import+'SVM results/', "goodcomp7_rel_AMP_subcluster_traces_div_smooth")
+SVM_results_dict                   = import_data(files_import+'SVM results/', "goodcomp7_rel_AMP_SVM_results_dict_noIc")
+cell_categories_df                 = import_data(files_import+'SVM results/', "goodcomp7_trace_sorting_cell_categories_v4")
 
-intensities_df_import = gdrive+'Paper/Figures/Figure Codes/Figure 4 Dicts/SVM results/'
-
-with open(os.path.join(intensities_df_import, 'goodcomp7_rb_AMP_peaks_dict_flat.pkl'), 'rb') as handle:
-     peaks_dict_flat = pickle.load(handle)
-with open(os.path.join(intensities_df_import, 'goodcomp7_rel_AMP_subcluster_traces_div_smooth.pkl'), 'rb') as handle:
-     subcluster_traces_smooth = pickle.load(handle)
-with open(os.path.join(intensities_df_import, 'goodcomp7_rel_AMP_SVM_results_dict_noIc.pkl'), 'rb') as handle:
-     SVM_results_dict = pickle.load(handle)
-with open(os.path.join(intensities_df_import, 'goodcomp7_trace_sorting_cell_categories_v4.pkl'), 'rb') as handle:
-     cell_categories_df = pickle.load(handle)
-
-#don't include IM2
-# peaks_dict_flat_nonIM2 = {k:v for k,v in peaks_dict_flat.items() if k not in 'IM2'}
-# peaks_dict_flat = peaks_dict_flat_nonIM2
-
-peaks_dict_flat = {k:v for k,v in peaks_dict_flat.items()}
+stim_time   = 60
+interval_forplt = np.concatenate([np.arange(0, 121, 15) , np.arange(150, 631, 30), np.arange(690, 971, 60)])
 
 treatments_to_plot = ["100X", "10X",'-PGN']
-#treatments_to_plot = ["100X"]
+peaks_dict_flat = {k:v for k,v in peaks_dict_flat.items()}
 
-stim_time = 60
-
-#%% find out how many cells are in 10X Dpt Gradual (very high transcriptional behavior for some reason)
-dpt_delay_10 = []
-mtk_delay_10 = []
-
-
-for ind, row in SVM_results_dict['All cells'].iterrows():
-    ind_split = ind.split('-')
-    if ind_split[0] == '10X Cell Dpt':
-        if row['Predicted'] == 'D':
-            dpt_delay_10.append(ind)
-    if ind_split[0] == '10X Cell Mtk':
-        if row['Predicted'] == 'D':
-            mtk_delay_10.append(ind)
-
-dpt_delay_10_peaks = []
-mtk_delay_10_peaks = []
-       
-for ind, row in peaks_dict_flat['Dpt'].iterrows():
-    if ind in dpt_delay_10:
-        print(ind)
-        if (row != 0).any():
-            dpt_delay_10_peaks.append(ind)
-    
-for ind, row in peaks_dict_flat['Mtk'].iterrows():
-    if ind in mtk_delay_10:
-        if (row != 0).any():
-            mtk_delay_10_peaks.append(ind)
-            
-#are these cells' unnormalized rnuc:tot values higher than gradual 100X cells?
-
-#%%   
+#%% Fig 4A Plot classification of traces
 colors          = ["#DC143C", "#FF6F61", "indigo", "dodgerblue", "grey"]
 color_palette   = sns.color_palette(colors)
 behavior_colors = {"I": color_palette[0], "Id": color_palette[1], "G": color_palette[2], "D": color_palette[3], "N": color_palette[4]}
@@ -180,7 +110,6 @@ behavior_rev    = {v: k for k, v in behavior_keys.items()}
 line_styles     = {"Dpt": "solid", "IM2": "dashed", "Mtk": "dotted"}
 
 AMPs = list(peaks_dict_flat.keys())
-
 
 treatments = []
 for AMP, AMP_df in peaks_dict_flat.items():
@@ -194,10 +123,6 @@ for AMP, AMP_df in peaks_dict_flat.items():
         else:
             raise ValueError("Treatments must be consistent across AMPs.")
             
-#or set manually
-#treatments = ['100X']
-            
-            
 # column and row names
 col_names              = [behavior for behavior in behavior_rev]
 row_names              = ["FC $R_{nuc:tot}$"] + [treatment for treatment in treatments_to_plot]
@@ -208,7 +133,6 @@ all_traces_df   = flatten_trace_df(subcluster_traces_smooth)
 times           = list(all_traces_df.columns)
 
 # initialize figure
-#figsize1 = (6.3, 2.35)
 figsize1 = (6.3, 1 * (len(treatments_to_plot) + 1))
 
 fig, axs    = plt.subplots(len(treatments_to_plot) + 1, 5, figsize = figsize1, sharey = "row")
@@ -231,7 +155,6 @@ for n, (SVM_behavior, behavior_name) in enumerate(behavior_keys.items()):
     
     mask        = (results_df["Predicted"] == SVM_behavior)
     indices     = results_df.index[mask].tolist()
-    # print(f"\n{SVM_behavior}: {len(indices)}")
     
     num_cells   = len(indices)
     traces      = all_traces_df.loc[indices]
@@ -356,11 +279,6 @@ for AMP, AMP_df in peaks_dict_flat.items():
     
     percent_peaks[AMP] = percent_peaks_behavior
 
-# add row and column labels
-#pad = 5
-
-# print(col_names)
-
 pad=5
 for ax, col in zip(axs[0], col_names):
     if col == 'Immediate with decay':
@@ -408,11 +326,9 @@ axs[3,4].legend(handles, labels, loc='upper right', bbox_to_anchor=(1.02, .99),
 fig.supxlabel("Time (min)", fontsize=fsize, y=0.01)
 
 plt.tight_layout(pad = .2)     
-plt.show()
+#plt.show()
 
-savename = fig_output+'/Figure 4/RhoBAST Classified Traces All concen renorm_timemaxlabel.png'
-#fig.savefig(savename, dpi=1000, bbox_inches='tight')
-
-#%% bargraph of behaviors depending on AMP
-with open(gdrive+"Paper/Figures/Figure Codes/Figure 4 Dicts/SVM results/goodcomp7_rel_AMP_dict_trace_descriptors_SVM_noIc.pkl", 'rb') as handle:
-     dict_trace_descriptors = pickle.load(handle)
+#---------------------------------------- Save
+figname = 'RhoBAST Classified Traces'
+savename = fig_output+'Fig 4A_'+figname+'.png'
+fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
