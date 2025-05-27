@@ -38,7 +38,7 @@ tickfsize = 9
 #%% Import data for #cell 04_Dpt_10X_1_Cell 76
 
 #set dataset parameters
-stim=4 #first slice after inject -1!!!
+stim        = 4 #first slice after inject -1!!!
 nuc_channel = 0
 rel_channel = 1
 interval_forplt = np.concatenate([np.arange(0, 121, 15) , np.arange(150, 631, 30), np.arange(690, 971, 60)])
@@ -161,7 +161,7 @@ plt.show()
 
 #---------------------------------------- Save
 figname = day+"_"+fname[3:-9]+"_"+cell
-savename = fig_output+'Fig1C_'+figname+'.png'
+savename = fig_output+'Fig 1C_'+figname+'.png'
 panel.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
 #%% Fig 1D Relish trace
@@ -221,7 +221,7 @@ plt.show()
 
 #---------------------------------------- Save
 figname = day+"_"+fname[3:-9]+"_"+cell+'_Trace'
-savename = fig_output+'Fig1D_'+figname+'.png'
+savename = fig_output+'Fig 1D_'+figname+'.png'
 fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
 #%% Fig 1E Heatmap of cell traces
@@ -294,5 +294,5 @@ plt.show()
 
 #---------------------------------------- Save
 figname = '0410_10X_RelishHeatmap_nonlintime'
-savename = fig_output+'Fig1E_'+figname+'.png'
+savename = fig_output+'Fig 1E_'+figname+'.png'
 fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
