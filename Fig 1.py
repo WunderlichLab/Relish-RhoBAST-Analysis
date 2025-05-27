@@ -22,24 +22,21 @@ from microfilm.microplot import microshow, Micropanel
 import seaborn as sns
 import copy
 from scipy.signal import savgol_filter
+datetime_str = time.strftime("%m%d%y_%H:%M")
 
 #!!! Update path file!!!
 gitdir = 'G:/path/' 
+gitdir = 'G:/Shared drives/Wunderlich Lab/People/Noshin/Codes\Main Analysis Pipeline/Github Upload - Test/Figures/'
 #!!! Update path file!!!
 
 files_import = gitdir+'Figure 1 Files/'
 fig_output = gitdir+'Temp Output/Fig 1/'
 
-datetime_str = time.strftime("%m%d%y_%H:%M")
-resolution=  3.4756 #pixels per micron
-units_per_pix = 1/resolution
-
 plt.rcParams['font.family'] = 'Arial'
 labelfsize = 12
 fsize = 10
 tickfsize = 9
-
-#%% Import data for #cell 04_Dpt_10X_1_Cell 76------------------------------------------------------------------------------------------------------------------------------------
+#%% Import data for #cell 04_Dpt_10X_1_Cell 76
 
 #set dataset parameters
 stim=4 #first slice after inject -1!!!
@@ -64,7 +61,7 @@ cyto_mask_tif = tf.imread(files_import+fname+'_Cyto Matched Mask.tif')
 nuc_mask_tif = tf.imread(files_import+fname+'_Nuc Matched Mask.tif')
 nframes = time_series_tif.shape[0]
     
-#%% Fig 1C time-course cell panel------------------------------------------------------------------------------------------------------------------------------------
+#%% Fig 1C time-course cell panel
 
 figsize1 = [2.5,1.9]
 fig, ax = plt.subplots(dpi=1000)
@@ -161,14 +158,14 @@ cyto_contour1 = microim1.ax.contour(cropped_cyto_mask_dil[0], colors=color_cont[
 cyto_contour2 = microim2.ax.contour(cropped_cyto_mask_dil[1], colors=color_cont[0], alpha=alp, linewidths=lw, linestyles=linstyl)
 cyto_contour3 = microim3.ax.contour(cropped_cyto_mask_dil[2], colors=color_cont[0], alpha=alp, linewidths=lw, linestyles=linstyl)
 
-#---------------------------------------- Save
 plt.show()
 
+#---------------------------------------- Save
 figname = day+"_"+fname[3:-9]+"_"+cell
 savename = fig_output+'Fig1C_'+figname+'.png'
 panel.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
-#%% Fig 1D Relish trace------------------------------------------------------------------------------------------------------------------------------------
+#%% Fig 1D Relish trace
 
 figsize2 = [2.3,1]  # Figure size
 fig, ax = plt.subplots(figsize=figsize2)  # Create a single plot
@@ -221,16 +218,14 @@ for timemark in times:
     xval = interval_forplt_adj[timemark]
     ax.axvline(xval, color='#db577b', linewidth=0.8, linestyle='dotted')
 
-
-#---------------------------------------- Save
 plt.show()
 
+#---------------------------------------- Save
 figname = day+"_"+fname[3:-9]+"_"+cell+'_Trace'
 savename = fig_output+'Fig1D_'+figname+'.png'
 fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
-
-#%% Fig 1E Heatmap of cell traces------------------------------------------------------------------------------------------------------------------------------------
+#%% Fig 1E Heatmap of cell traces
 figsize3= (12, 14)
 
 #----------------------------------------  import and sort dataset dict_intensities
