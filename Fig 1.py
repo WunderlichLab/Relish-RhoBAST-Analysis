@@ -23,6 +23,12 @@ import seaborn as sns
 import copy
 from scipy.signal import savgol_filter
 
+#!!! Update path file!!!
+gitdir = 'G:/path/' 
+#!!! Update path file!!!
+
+files_import = gitdir+'Figure 1 Files/'
+fig_output = gitdir+'Temp Output/Fig 1/'
 
 datetime_str = time.strftime("%m%d%y_%H:%M")
 resolution=  3.4756 #pixels per micron
@@ -32,10 +38,6 @@ plt.rcParams['font.family'] = 'Arial'
 labelfsize = 12
 fsize = 10
 tickfsize = 9
-
-gitdir = 'G:/Shared drives/Wunderlich Lab/People/Noshin/Codes\Main Analysis Pipeline/Github Upload - Test/Figures/'
-files_import = gitdir+'Figure 1 Files/'
-fig_output = gitdir+'Temp Output/Fig 1/'
 
 #%% Import data for #cell 04_Dpt_10X_1_Cell 76------------------------------------------------------------------------------------------------------------------------------------
 
