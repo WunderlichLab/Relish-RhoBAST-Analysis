@@ -25,6 +25,13 @@ import datetime
 current_date   = datetime.date.today()
 formatted_date = current_date.strftime("%Y-%m-%d")
 
+#!!! Update path file!!!
+gitdir = 'G:/path/' 
+#!!! Update path file!!!
+
+files_import = gitdir+'Figure 2 Files/'
+fig_output = gitdir+'Temp Output/Fig 2/'
+
 resolution=  3.4756 #pixels per micron
 units_per_pix = 1/resolution
 
@@ -34,11 +41,6 @@ fsize = 10
 tickfsize = 9
 mag = 1.2
 shrink = 0.78
-
-gitdir = 'G:/Shared drives/Wunderlich Lab/People/Noshin/Codes\Main Analysis Pipeline/Github Upload - Test/Figures/'
-files_import = gitdir+'Figure 2 Files/'
-fig_output = gitdir+'Temp Output/Fig 2/'
-
 
 def import_data(file_path, object_name, file_type = ".pkl"):   
     full_file_path = file_path + "/" + object_name + file_type
