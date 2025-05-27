@@ -249,7 +249,7 @@ plt.show()
 
 #---------------------------------------- Save
 figname = 'Classified Traces_treatment'
-savename = fig_output+'Fig2B_'+figname+'.png'
+savename = fig_output+'Fig 2B_'+figname+'.png'
 fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
 #%% Fig 2A visualize sample trace classification characteristics
@@ -305,7 +305,7 @@ plt.show()
 
 #---------------------------------------- Save
 figname = 'Classification Labels'
-savename = fig_output+'Fig2A_'+figname+'.png'
+savename = fig_output+'Fig 2A_'+figname+'.png'
 fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
 #%% Fig 2C Stacked bar plot
@@ -444,7 +444,7 @@ if plot == "vert":
     
     #---------------------------------------- Save
     figname = 'Barplot_vert'
-    savename = fig_output+'Fig2C_'+figname+'.png'
+    savename = fig_output+'Fig 2C_'+figname+'.png'
     plt.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
     
@@ -472,7 +472,7 @@ elif plot == "hor":
     
     #---------------------------------------- Save
     figname = 'Barplot_horz'
-    savename = fig_output+'Fig2C_'+figname+'.png'
+    savename = fig_output+'Fig 2C_'+figname+'.png'
     plt.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
 
@@ -581,5 +581,5 @@ plt.show()
 
 #---------------------------------------- Save
 figname = 'Predictor Outputs'
-savename = fig_output+'Fig2E_'+figname+'.png'
+savename = fig_output+'Fig 2E_'+figname+'.png'
 fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
