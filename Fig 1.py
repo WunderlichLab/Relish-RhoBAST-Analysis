@@ -26,7 +26,6 @@ datetime_str = time.strftime("%m%d%y_%H:%M")
 
 #!!! Update path file!!!
 gitdir = 'G:/path/' 
-gitdir = 'G:/Shared drives/Wunderlich Lab/People/Noshin/Codes\Main Analysis Pipeline/Github Upload - Test/Figures/'
 #!!! Update path file!!!
 
 files_import = gitdir+'Figure 1 Files/'
