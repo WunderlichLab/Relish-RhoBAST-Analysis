@@ -4,150 +4,63 @@ Created on Fri Apr  4 13:47:54 2025
 
 @author: noshin
 """
-
 import pandas as pd
 import seaborn as sns
-import tifffile as tf
-from tifffile import imread
-from tifffile import imshow
 import numpy as np
-import math
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.lines import Line2D
-from matplotlib.cm import get_cmap
-import matplotlib.ticker as ticker
-import matplotlib.patches as patches
-from matplotlib.gridspec import GridSpec
-import matplotlib.gridspec as gridspec
 import os
-from scipy import ndimage
 from scipy.signal import savgol_filter
-from skimage import measure
-import skimage.io
-from skimage.measure import label, regionprops
-from scipy.ndimage import label
-from scipy.ndimage import binary_dilation
-from scipy import stats
-from scipy.stats import ks_2samp
-from scipy.signal import savgol_filter
-from skimage.segmentation import mark_boundaries
-from skimage.feature.peak import peak_local_max
 from scipy.stats import ks_2samp
 from sklearn.metrics import roc_curve, roc_auc_score
 from MLstatkit.stats import Delong_test
 from statsmodels.stats.multitest import multipletests
-from PIL import Image
-import itertools
 import pickle
-import  microfilm.microplot
-from microfilm import microplot
-from microfilm.microplot import microshow, Micropanel
-import gc
-import copy
-import datetime
 import time
-import random
 from datetime import timedelta
 datetime_str = time.strftime("%m%d%y_%H:%M")
 
-mac = '/Volumes/rkc_wunderlichLab/'
-PC = 'R:/'
-anacomp = 'Z:/'
+#!!! Update path file!!!
+gitdir = 'G:/path/' 
+#!!! Update path file!!!
 
-computer = anacomp
-
-resolution=  3.4756 #pixels per micron
-units_per_pix = 1/resolution
-nuc_channel = 0
-rel_channel = 1
-rb_channel = 2
-
-sg_factor_rel = 5   #5 for relish data
-sg_factor_rb = 8   #5 for relish data
-sg_order_rel  = 2   #Polynomial order for Savitzky–Golay smoothing
-
+files_import = gitdir+'Figure 5 Files/'
+fig_output = gitdir+'Temp Output/Fig 5/'
 
 plt.rcParams['font.family'] = 'Arial'
-
+labelfsize = 12
 fsize = 10
 tickfsize = 9
 mag = 1.2
 shrink = 0.78
 
-if computer == mac:
-    gdrive = '/Users/noshin/Library/CloudStorage/GoogleDrive-noshin@bu.edu/Shared drives/Wunderlich Lab/People/Noshin/'
-else:
-    gdrive = 'G:/Shared drives/Wunderlich Lab/People/Noshin/'
+sg_factor_rel = 5   #5 for relish data
+sg_factor_rb = 8   #5 for relish data
+sg_order_rel  = 2   #Polynomial order for Savitzky–Golay smoothing
 
-fig_output = gdrive+'Paper/Figures/'
+resolution=  3.4756 #pixels per micron
+units_per_pix = 1/resolution
 
+nuc_channel = 0
+rel_channel = 1
+rb_channel = 2
 
-#%% Histogram of Relish ratios by spikers
-intensities_df_import = gdrive+"Paper/Figures/Figure Codes/Figure 5 Dicts/Histogram Dicts/Sparse Imaging/"
-with open(os.path.join(intensities_df_import, 'goodcomp7_times.pkl'), 'rb') as handle:
-    goodcomp7_times = pickle.load(handle)
-times = goodcomp7_times
+def import_data(file_path, object_name, file_type = ".pkl"):   
+    full_file_path = file_path + "/" + object_name + file_type
+    # print(full_file_path)
+    with open(full_file_path, "rb") as f:
+        object_data = pickle.load(f)
+        
+    return object_data
 
-#Relish values
-with open(os.path.join(intensities_df_import, 'goodcomp7_rbpeaks_rel_dict.pkl'), 'rb') as handle:
-    peaksovertime_rel = pickle.load(handle)
-#AUCs
-with open(os.path.join(intensities_df_import, 'goodcomp7_rbpeaks_AUCs_dict.pkl'), 'rb') as handle:
-    peaksovertime_auc = pickle.load(handle)
-
-#--------------------------------------
-#make datafarmes for each condition to count (same across normalizations)
-conc= '100X'
-
-rel_peaks = peaksovertime_rel['Norm']['Peaks']
-rel_nopeaks = peaksovertime_rel['Norm']['No peaks']
-total_cells_allconc = rel_nopeaks.shape[0]
+#%% Import Data
+times                    = import_data(files_import, 'goodcomp7_times')
+peaksovertime_rel        = import_data(files_import, 'goodcomp7_rbpeaks_rel_dict')
+peaksovertime_auc        = import_data(files_import, 'goodcomp7_rbpeaks_AUCs_dict')
 
 
-rel_peaks_conc = rel_peaks[[conc in s for s in rel_peaks.index]]
-rel_nopeaks_conc = rel_nopeaks[[conc in s for s in rel_nopeaks.index]]
-
-#break up by enh
-rel_peaks_conc_im2 = rel_peaks_conc[['IM2' in s for s in rel_peaks_conc.index]]
-rel_nopeaks_conc_im2 = rel_nopeaks_conc[['IM2' in s for s in rel_nopeaks_conc.index]]
-
-rel_peaks_conc_dpt = rel_peaks_conc[['Dpt' in s for s in rel_peaks_conc.index]]
-rel_nopeaks_conc_dpt = rel_nopeaks_conc[['Dpt' in s for s in rel_nopeaks_conc.index]]
-
-rel_peaks_conc_mtk = rel_peaks_conc[['Mtk' in s for s in rel_peaks_conc.index]]
-rel_nopeaks_conc_mtk = rel_nopeaks_conc[['Mtk' in s for s in rel_nopeaks_conc.index]]
-
-#--------------------------------------
-# count of how many spikers are across the whole dataset, just for 100X
-total_cells = rel_nopeaks_conc.shape[0]
-
-total_time = total_cells*28
-ncells_nonepeakers = rel_nopeaks_conc.dropna().shape[0]
-ncells_atleastone_peakers = rel_peaks_conc.apply(lambda row: row.notna().any(), axis=1).sum()
-#total: 494/1184 (42%) cells peak at least once post-stim(100X)
-
-total_im2 = rel_peaks_conc_im2.shape[0]
-ncells_im2_nonepeakers = rel_nopeaks_conc_im2.dropna().shape[0]
-ncells_im2_atleastone_peakers = rel_peaks_conc_im2.apply(lambda row: row.notna().any(), axis=1).sum()
-#im2: 0/84 (0%) cells peak at least once post-stim  (100X)
-perc_im2 = (ncells_im2_atleastone_peakers/total_im2 ) *100
-
-total_dpt = rel_peaks_conc_dpt.shape[0]
-ncells_dpt_nonepeakers = rel_nopeaks_conc_dpt.dropna().shape[0]
-ncells_dpt_atleastone_peakers = rel_peaks_conc_dpt.apply(lambda row: row.notna().any(), axis=1).sum()
-#dpt 365/653 (56%)
-perc_dpt = (ncells_dpt_atleastone_peakers/total_dpt ) *100
-
-total_mtk = rel_peaks_conc_mtk.shape[0]
-ncells_mtk_nonepeakers = rel_nopeaks_conc_mtk.dropna().shape[0]
-ncells_mtk_atleastone_peakers = rel_peaks_conc_mtk.apply(lambda row: row.notna().any(), axis=1).sum()
-#mtk 129/447 (29%)
-perc_mtk = (ncells_mtk_atleastone_peakers/total_mtk ) *100
-
- 
-
-#%%
+#%% KS Test function
 def add_ks_significance(ax, sample1, sample2, tickfsize, alternative='less'):
     """
     Performs a KS test on sample1 and sample2 and, if significant (p < 0.05),
@@ -198,7 +111,7 @@ def add_ks_significance(ax, sample1, sample2, tickfsize, alternative='less'):
 
     return p_val
 
-#%%  3 column version (combined TOC plots)
+#%% Fig 5C/D (combined KDE ROC plots)
 conc    = '100X'
 AMPs    = ['Dpt', 'Mtk']  # Dpt will be the first (top) row
 norm = False
@@ -212,12 +125,10 @@ char_labels = ["$R_{nuc:tot}$", "FC $R_{nuc:tot}$",
                    "T[ -30:Peak ]", "T[ -60:Peak ]", 
                    "T[ 0:Peak ]"]
 
-# Create a figure with 5 rows and 3 columns:
-# Column 0 = Dpt KDE, Column 1 = Mtk KDE, Column 2 = Combined ROC for Dpt and Mtk.
-
-
 fig, axs = plt.subplots(nrows=5, ncols=3, figsize=(4.5, 5), 
                         sharex=False, sharey=False)
+
+#Initalize for DeLong's test
 scores_dpt   = {}
 scores_mtk   = {}
 y_true_dpt   = {}
@@ -286,13 +197,7 @@ for i, char in enumerate(characteristics):
             elif AMP == 'Mtk':
                 mtk_peaks = AUC_peaks_conc_AMP.stack().values
                 mtk_nopeaks = AUC_nopeaks_conc_AMP.stack().values
-    
-    
-    # y_true_dpt = np.concatenate([np.ones(len(dpt_peaks)), np.zeros(len(dpt_nopeaks))])
-    # y_true_mtk = np.concatenate([np.ones(len(mtk_peaks)), np.zeros(len(mtk_nopeaks))])
-    # scores_dpt[char]= np.concatenate([dpt_peaks, dpt_nopeaks]) 
-    # scores_mtk[char] = np.concatenate([mtk_peaks, mtk_nopeaks]) 
-    
+
     # store Dpt
     scores_dpt[char] = np.concatenate([dpt_peaks,   dpt_nopeaks])
     y_true_dpt[char] = np.concatenate([np.ones(len(dpt_peaks)), np.zeros(len(dpt_nopeaks))])
@@ -300,6 +205,7 @@ for i, char in enumerate(characteristics):
     scores_mtk[char] = np.concatenate([mtk_peaks,   mtk_nopeaks])
     y_true_mtk[char] = np.concatenate([np.ones(len(mtk_peaks)), np.zeros(len(mtk_nopeaks))])
 
+    # Option: print median values of distributions
     # print('Dpt Peaks'+char+' '+str(np.median(dpt_peaks)))
     # print('Dpt No Peaks'+char+' '+str(np.median(dpt_nopeaks)))
     # print('Mtk Peaks '+char+' '+str(np.median(mtk_peaks)))
@@ -330,9 +236,7 @@ for i, char in enumerate(characteristics):
     p_val = add_ks_significance(ax_kde_mtk, mtk_peaks, mtk_nopeaks, tickfsize)
     print(f"Mtk {char} KS p-val = {p_val}")
     
-    # Add characteristic label
-    # ax_kde_dpt.text(-0.5, 0.5, char_labels[i], transform=ax_kde_dpt.transAxes,
-    #                 rotation=90, va='center', ha='center', fontsize=fsize)
+
     if i != 1:
         if i ==0:
             ax_kde_mtk.set_title('Mtk', fontsize=fsize*mag)        
@@ -376,13 +280,9 @@ for i, char in enumerate(characteristics):
 
    
 
-        # ----- Combined ROC Panel (Column 2) -----
+     # ----- Combined ROC Panel (Column 2) -----
     ax_roc = axs[i, 2]
     # Dpt ROC
-    #y_true_dpt = np.concatenate([np.ones(len(dpt_peaks)), np.zeros(len(dpt_nopeaks))])
-    # scores_dpt = np.concatenate([dpt_peaks, dpt_nopeaks])
-    # fpr_dpt, tpr_dpt, _ = roc_curve(y_true_dpt, scores_dpt)
-    
     dpt_scores = scores_dpt[char]
     dpt_labels = y_true_dpt[char]
     fpr_dpt, tpr_dpt, _ = roc_curve(dpt_labels, dpt_scores)
@@ -394,10 +294,6 @@ for i, char in enumerate(characteristics):
     if i ==0:
         ax_roc.set_title('ROC Curves', fontsize=fsize*mag)    
         
-    #y_true_mtk = np.concatenate([np.ones(len(mtk_peaks)), np.zeros(len(mtk_nopeaks))])
-    # scores_mtk = np.concatenate([mtk_peaks, mtk_nopeaks])
-    # fpr_mtk, tpr_mtk, _ = roc_curve(y_true_mtk, scores_mtk)
-    
     mtk_scores = scores_mtk[char]
     mtk_labels = y_true_mtk[char]
     fpr_mtk, tpr_mtk, _ = roc_curve(mtk_labels, mtk_scores)
@@ -419,26 +315,9 @@ for i, char in enumerate(characteristics):
     else:
         ax_roc.set_xticklabels(['', '', ''],fontsize=tickfsize)
     
-    
-    # Create the legend with a title "AUC"
-    # if i ==0:
-    #     leg = ax_roc.legend(title="AUC", fontsize=tickfsize*shrink, loc="lower right", handlelength=0.2)
-    #     plt.setp(leg.get_title(), fontsize=tickfsize)
-    # else:
     leg = ax_roc.legend(fontsize=tickfsize*shrink, loc="lower right",
                         handlelength=0.2, labelspacing=0.2,handletextpad=0.2)
-# #Add AUC suby label
-# auc_x= -0.024
-# line_auc_right = Line2D([auc_x, auc_x], [0.1, 0.57], transform=fig.transFigure, color='black', linewidth=2)
-# fig.add_artist(line_auc_right)
-# if norm==True:
-#     fig.text(auc_x, 0.335, "FC AUC $R_{nuc:tot}$", ha="center", va="center", rotation=90,
-#              fontsize=fsize*mag,
-#              bbox=dict(facecolor='white', edgecolor='none', pad=0))
-# else:
-#     fig.text(auc_x, 0.335, "AUC $R_{nuc:tot}$", ha="center", va="center", rotation=90,
-#              fontsize=fsize*mag,
-#              bbox=dict(facecolor='white', edgecolor='none', pad=0))
+
 
 # ----------------- Global Adjustments -----------------
 plt.subplots_adjust(wspace=0.3, hspace=0.3)
@@ -448,14 +327,15 @@ for ax in axs.flat:  # Works for both 1D and 2D subplot arrays
     ax.yaxis.set_label_coords(-.2, 0.5)
     ax.yaxis.label.set_horizontalalignment('center')
 
-# axs[:,2].set_ylabel('TPR', fontsize=fsize)
-# axs[:,2].yaxis.set_label_coords(-.2, 0.5)
+#axs[:,2].set_ylabel('TPR', fontsize=fsize)
+#axs[:,2].yaxis.set_label_coords(-.2, 0.5)
 
 plt.show()
 
-savename = fig_output + '/Figure 5/' + f'peak_KDE-ROC_3column_{conc}'
-#fig.savefig(savename, dpi=1000, bbox_inches='tight')
-
+#---------------------------------------- Save
+figname = 'Peak KDE ROC'
+savename = fig_output+'Fig 5CD_'+figname+'.png'#
+#fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
 #%% DeLong test with multiple comparison corrction
 # Get all unique pairs of models
@@ -495,12 +375,33 @@ reject, adj_pvals, _, _ = multipletests(all_pvals, alpha=0.05, method='bonferron
 for (enhan, m1, m2), raw_p, p_corr in zip(comparisons, all_pvals, adj_pvals):
     print(f"{enhan}: {m1} vs {m2}  raw p = {raw_p:.3e},  corrected p = {p_corr:.3e}")
 
-#%% Time trace for diagram, Run after sections for Fig3
+#%% Fig 5A Import data
+#Import dataframe
+with open(os.path.join(files_import, 'dict_intensities_ilastikpeaks_meansum_alldatasets_goodcells_nomasks_010925'), 'rb') as handle:
+    dict_intensities = pickle.load(handle)
 
-fig2size = [1, 5.]  # Adjusted the figure size for two panels
+f_dict_intensities = dict_intensities['2024-10-23']['07_Dpt_100X_1_maxZ.tif']
+df_relish_ratio = pd.DataFrame({cell: [intensity for time, intensity in values] for cell, values in f_dict_intensities['relish_ratio'].items()})
+df_rb = pd.DataFrame({cell: [intensity for time, intensity in values] for cell, values in f_dict_intensities['peak_intensities_sum'].items()})
 
+stim = 4
+# Original time points (in minutes)
+interval_forplt = np.concatenate([
+    np.arange(0, 121, 15),
+    np.arange(150, 631, 30),
+    np.arange(690, 991, 60)
+])
+offset = 60
+interval_forplt_offset = interval_forplt-offset
+
+celln= 92
+cell='Cell '+str(celln)
 npanels= 6
-fig, axs = plt.subplots(npanels, 1, figsize=fig2size, sharex=True,
+
+#%% Fig 5A category schematics (Run after sections for Fig3)
+figsize2 = [1, 5]  # Adjusted the figure size for two panels
+
+fig, axs = plt.subplots(npanels, 1, figsize=figsize2, sharex=True,
                        height_ratios = [.8,1,1,1,1,1])  # Create a 2-panel plot
 
 #---------------------------------------------------------- smooth relish data
@@ -510,7 +411,7 @@ y_sgsmooth = savgol_filter(y_values, window_length = window, polyorder = sg_orde
 norm_prestim  = sum(y_sgsmooth[0:4])/4
 y_sgsmoot_norm = y_sgsmooth/norm_prestim
 
-    
+
 #---------------------------------------------------------- Top panel: sum foci [cell] vs. time
 y_values_rb = df_rb[cell]
 positive_intensity = y_values_rb > 0
@@ -564,7 +465,7 @@ xval_neg = interval_forplt[timemark_neg]-offset
 
 axs[0].plot(xval, (y_values_rb[timemark]/1000), marker='o', markersize=4, color='green', alpha=0.9, mfc='none')
 axs[0].plot([xval, xval], ylim_rb, color='green', linestyle='-', 
-        linewidth=1, alpha=1, zorder=2)
+        linewidth=1, alpha=1, zorder=0)
 axs[0].plot([xval_neg, xval_neg], ylim_rb, color='lightgreen', linestyle='-', 
         linewidth=1, alpha=1, zorder=2)
 
@@ -664,12 +565,12 @@ axs[5].add_patch(prestim)
 axs[5].add_patch(poststim_hatch)
 
 # Adding time marks
-for time in time_points:
+for time in interval_forplt_offset:
     for axisn in range(npanels):
         axs[axisn].axvline(x=time, color='lightgray', linestyle='-', linewidth = 0.4, alpha=0.5, zorder=0)
 
 
-for ax in axs.flat:  # Works for both 1D and 2D subplot arrays
+for ax in axs.flat:  
     ax.tick_params(axis='y', which='both', pad=.01)
     ax.yaxis.set_label_coords(-.3, 0.5)
     ax.tick_params(axis='x', which='both', pad=.3)
@@ -687,6 +588,7 @@ fig.text(auc_x, 0.3, " Avg $R_{nuc:tot}$ ", ha="center", va="center", rotation=9
 plt.subplots_adjust(wspace=0.3, hspace=0.3)
 plt.show()
 
-savename = fig_output+'Figure 5/'+'HistogramDiagram.png'
-fig.savefig(savename, dpi=1000, bbox_inches='tight')
-
+#---------------------------------------- Save
+figname = 'Category Schematics'
+savename = fig_output+'Fig 5A_'+figname+'.png'#
+fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
