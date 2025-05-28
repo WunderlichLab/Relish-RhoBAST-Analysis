@@ -45,6 +45,9 @@ interval_forplt = np.concatenate([np.arange(0, 121, 15) , np.arange(150, 631, 30
 interval_forplt_adj = interval_forplt-interval_forplt[stim].tolist()
 interval_hrs = [str(timedelta(minutes=int(time.item())))[:-3] for time in interval_forplt]
 
+resolution=  3.4756 #pixels per micron
+units_per_pix = 1/resolution
+
 day = '2024-10-02'
 fname='04_Dpt_10X_1_maxZ'
 celln= 76
