@@ -8,9 +8,13 @@
 #   - Saves TrackMate XML and binary mask TIFFs for downstream analysis.
 #
 # Usage:
-#   1. Set currDataset (line  Twenty-two) to your dataset folder name.
-#   2. Ensure channel order matches YOUR data on lines Forty-five & Forty-six.
-#   3. Manually verify channel order and filters on one file before full batch (see “# !!!! TODO !!!!”).
+#   1. Set channel to segment (line 44).
+#   2. Set directory paths (lines 48-49).
+#   3. Ensure channel order matches YOUR data (lines 77-82).
+#	Current setup assumes Channel 1: Nuclei, Channel 2: Relish, Channel 3: RhoBAST.
+#   4. Set path to Cellpose install. Select model for segmentation  (lines 89-94)
+#	Can train your own model or built-in cyto/nuclear.
+#   5. Manually verify channel order and filters on one file before full batch (lines 107-110).
 #	Note: filters (above=true, below=false)
 #
 # Helpful links:
@@ -42,8 +46,8 @@ showOutput    = False
 
 # Base directories
 allData      	= "/path/to/your/data/";          		# Base directory for all datasets
-datasetName 	= "2025-01-01_DatasetName/"				# Name of the dataset folder
-baseDir       	= os.path.join(allData, datasetName) 	# Base directory for current dataset
+datasetName 	= "2025-01-01_DatasetName/"			# Name of the dataset folder
+baseDir       	= os.path.join(allData, datasetName) 		# Base directory for current dataset
 
 inputTifs       = os.path.join(baseDir, "TIF_Split_Series")
 outputLabelMask = os.path.join(baseDir, "Trackmate Files", maskSettings, 
