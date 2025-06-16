@@ -39,10 +39,8 @@ File.makeDirectory(outputMatchedCyto);
 
 // Make Directories for next step (ilastik segmentation)
 File.makeDirectory(baseDir + "/ilastik Outputs");
-outputIlastikMasks = baseDir + "/ilastik Outputs/Aptamer Masks/";
-outputIlastikProbs = baseDir + "/ilastik Outputs/Probabilities/";
-File.makeDirectory(outputIlastikMasks);
-File.makeDirectory(outputIlastikProbs);
+File.makeDirectory(baseDir + "/ilastik Outputs/Aptamer Masks/");
+File.makeDirectory(baseDir + "/ilastik Outputs/Probabilities/");
 
 run("CLIJ2 Macro Extensions", "cl_device=");
 
