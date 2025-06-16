@@ -8,10 +8,9 @@
 #   - Generates per‐cell multi‐page TIFFs showing segmentation, Relish ratio, and peak signals.
 #
 # Usage:
-#   1. Configure `allData`, `project`, `currDataset`, and `maskSettings` below.
-#   2. Adjust calibration (`resolution`, channels, `stimFrame`) for your data.
+#   1. Set `maskSettings` and directory paths (lines 31-33).
+#   2. Adjust calibration (`resolution`, channels, `stimFrame`, lines 36-42) for your data.
 #   3. Set `useSavedDict = True` to load existing pickles instead of recomputing.
-#   4. Run `python this_script.py`.
 # ------------------------------------------------------------------------------
 
 
