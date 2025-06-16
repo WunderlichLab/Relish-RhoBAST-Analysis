@@ -36,6 +36,14 @@ outputMatchedCyto  = baseDir + "/Trackmate Files/" + maskSettings + "/Cyto Match
 // Ensure output folders exist
 File.makeDirectory(outputMatchedNuc);
 File.makeDirectory(outputMatchedCyto);
+
+// Make Directories for next step (ilastik segmentation)
+File.makeDirectory(baseDir + "/ilastik Outputs");
+outputIlastikMasks = baseDir + "/ilastik Outputs/Aptamer Masks/";
+outputIlastikProbs = baseDir + "/ilastik Outputs/Probabilities/";
+File.makeDirectory(outputIlastikMasks);
+File.makeDirectory(outputIlastikProbs);
+
 run("CLIJ2 Macro Extensions", "cl_device=");
 
 // Main processing function
