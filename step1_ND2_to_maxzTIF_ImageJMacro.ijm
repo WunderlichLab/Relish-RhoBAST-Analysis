@@ -8,11 +8,14 @@
  * and saving the output as TIFF files for downstream analysis.
  *
  * Instructions:
- * 1. Set 'baseDir' to the directory where your dataset folders reside.
+ * 1. Set 'allData' to the directory where your dataset folders reside.
  * 2. Set 'datasetName' to the specific folder name for your dataset.
  * 3. Ensure ND2 files are placed in the 'ND2_Split_Series' subfolder inside the dataset.
  * 4. Adjust 'nChannels', 'channelMins', and 'channelMaxs' arrays for your data.
  * 5. Run this macro in ImageJ or Fiji.
+ * Note: If Bio-Formats menu pops up, enable windowless import: 
+ * 		Plugins > Bio-Formats > Bio-Formats Plugins Configuration > Formats Tab
+ * 		Nikon ND2 Tab > Check "Windowless"
  * ------------------------------------------------------------------------------
  */
 
@@ -29,8 +32,8 @@ nChannels = 3;
 channelMins = newArray(32, 45, 33);
 channelMaxs = newArray(4095, 2733, 4095);
 
-inputDir  = baseDir + datasetName + "ND2_Split_Series/";
-outputDir = baseDir + datasetName + "TIF_Split_Series_MaxZ/";
+inputDir  = baseDir + "ND2_Split_Series/";
+outputDir = baseDir + "TIF_Split_Series_MaxZ/";
 
 // Create output directory if it doesn't exist
 File.makeDirectory(outputDir);
