@@ -15,10 +15,10 @@
 #   3. Run—interpolated masks will appear under
 #      `baseDir/Python/<maskSettings>/Interpolated Masks_fullinterp/{Cyto,Nuclei}`.
 # ------------------------------------------------------------------------------
-
 import os
 import numpy as np
 import tifffile
+from tifffile import imread, imshow, imwrite
 from scipy.ndimage import binary_dilation, binary_erosion
 
 # === CONFIGURATION ===
@@ -98,7 +98,7 @@ def interpolate_x1(mask, export_path, resolution, vox_size):
 
     img = img.astype(np.uint16)
     metadata = {"Resolution": resolution, "Voxel size": vox_size}
-    tifffile.imsave(export_path, img, metadata=metadata)
+    tifffile.imwrite(export_path, img, metadata=metadata)
     return img
 
 
