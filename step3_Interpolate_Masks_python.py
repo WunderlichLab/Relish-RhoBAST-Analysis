@@ -11,7 +11,7 @@
 #
 # Usage:
 #   1. Set`maskSettings` and directory paths (lines 25-27).
-#   2. Edit `resolution` and `voxSize` to match your imaging calibration.
+#   2. Edit `resolution` and `voxSize` to match your imaging calibration (lines 31-32).
 #   3. Run—interpolated masks will appear under
 #      `baseDir/Python/<maskSettings>/Interpolated Masks_fullinterp/{Cyto,Nuclei}`.
 # ------------------------------------------------------------------------------
