@@ -49,7 +49,7 @@ allData      	= "/path/to/your/data/";          		# Base directory for all datas
 datasetName 	= "2025-01-01_DatasetName/"			# Name of the dataset folder
 baseDir       	= os.path.join(allData, datasetName) 		# Base directory for current dataset
 
-inputTifs       = os.path.join(baseDir, "TIF_Split_Series")
+inputTifs       = os.path.join(baseDir, "TIF_Split_Series_MaxZ")
 outputLabelMask = os.path.join(baseDir, "Trackmate Files", maskSettings, 
                                 channel.title() + " Masks")
 outputFijiFile  = os.path.join(baseDir, "Trackmate Files", maskSettings, 
@@ -57,8 +57,10 @@ outputFijiFile  = os.path.join(baseDir, "Trackmate Files", maskSettings,
 
 # Create necessary output folders:
 for path in [outputLabelMask, outputFijiFile]:
-    os.makedirs(path, exist_ok=True)
-
+    directory = File(path)
+    if not directory.exists():
+        directory.mkdirs()
+	    
 # === PROCESSING FUNCTION ===
 def cellposeTrackmateAuto(inputDir, labelMaskDir, fijiFileDir, filename):
     """Run TrackMate+Cellpose on one TIFF and export results."""
