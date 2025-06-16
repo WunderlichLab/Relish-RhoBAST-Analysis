@@ -28,8 +28,8 @@ datasetName 	= "2025-01-01_DatasetName/"				# Name of the dataset folder
 baseDir       	= os.path.join(allData, datasetName) 	# Base directory for current dataset
 
 # Physical scaling (edit as needed)
-resolution      = 0.1      # pixels per micron
-voxSize         = 1.0      # micron³ per voxel
+resolution      = 3.4756      # pixels per micron
+voxSize         = 0.2697      # micron³ per voxel
 
 # Input/output paths
 inputMaxZTifs    = os.path.join(baseDir, "TIF_Split_Series_MaxZ")
