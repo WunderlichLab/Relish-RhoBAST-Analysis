@@ -28,7 +28,6 @@ allData      	= "/path/to/your/data/";          		// Base directory for all data
 datasetName 	= "2025-01-01_DatasetName/"				// Name of the dataset folder
 baseDir       	= os.path.join(allData, datasetName) 	// Base directory for current dataset
 
-
 inputCytomask      = baseDir + "/Python/" + maskSettings + "/Interpolated Masks_fullinterp/Cyto/";
 inputNucMask       = baseDir + "/Python/" + maskSettings + "/Interpolated Masks_fullinterp/Nuclei/";
 outputMatchedNuc   = baseDir + "/Trackmate Files/" + maskSettings + "/Nuclei Matched Masks/";
@@ -37,12 +36,15 @@ outputMatchedCyto  = baseDir + "/Trackmate Files/" + maskSettings + "/Cyto Match
 // Ensure output folders exist
 File.makeDirectory(outputMatchedNuc);
 File.makeDirectory(outputMatchedCyto);
+run("CLIJ2 Macro Extensions", "cl_device=");
 
 // Main processing function
 function matchCellNucLabelMaps(cytoPath, nucPath, outNucDir, outCytoDir, filename) {
-    Ext.CLIJ2_clear();
-    open(cytoPath + filename);          labelmapCells   = getTitle();
-    open(nucPath + filename);           labelmapNuclei  = getTitle();
+	Ext.CLIJ2_clear();
+    open(cytoPath + filename);          
+    labelmapCells   = getTitle();
+    open(nucPath + filename);           
+    labelmapNuclei  = getTitle();
     Ext.CLIJ2_push(labelmapCells);
     Ext.CLIJ2_push(labelmapNuclei);
 
@@ -58,20 +60,34 @@ function matchCellNucLabelMaps(cytoPath, nucPath, outNucDir, outCytoDir, filenam
     reassignedNuclei = "reassigned_nuclei";
     Ext.CLIJ2_replaceIntensities(labelmapNuclei, idxMaxT, reassignedNuclei);
     Ext.CLIJ2_pull(reassignedNuclei);
-    Ext.CLIJ2_release(jaccardMatrix, jaccardMatrixT, idxMax, idxMaxT, maxOverlap);
-
+    
+	Ext.CLIJ2_release(jaccardMatrix);
+	Ext.CLIJ2_release(jaccardMatrixT);
+	Ext.CLIJ2_release(idxMax);
+	Ext.CLIJ2_release(idxMaxT);
+	Ext.CLIJ2_release(maxOverlap);
+    
     // Identify cells with no nuclei
-    selectWindow(reassignedNuclei);
-    resetMinAndMax();
-    getRawStatistics(nPx, mean, min, max, std, hist);
-    emptyArray = newArray(nrCells);
-    for (i = 0; i < nrCells; i++) {
-        emptyArray[i] = (i <= max && hist[i] == 0) ? i : 0;
-    }
-    Ext.CLIJ2_pushArray("emptyArr", emptyArray, nrCells, 1, 1);
-    emptyCells    = "emptyCells";
-    Ext.CLIJ2_replaceIntensities(labelmapCells, "emptyArr", emptyCells);
-    Ext.CLIJ2_pull(emptyCells);
+	selectWindow(reassignedNuclei);
+	resetMinAndMax();
+	getRawStatistics(nPx, mean, min, max, std, hist);
+
+	// Create array for empty cells
+	emptyArray = Array.getSequence(nrCells);
+	for (i = 0; i < nrCells; i++) {
+	    if (i <= max) {
+	        if (hist[i] != 0) emptyArray[i] = 0;
+	    }
+	}
+	
+	// Push the array into GPU memory with a variable image name (not a string)
+	emptyArrayImage = "emptyArr";
+	Ext.CLIJ2_pushArray(emptyArrayImage, emptyArray, nrCells, 1, 1);
+	
+	// Replace intensities using the emptyArray mask
+	emptyCells = "emptyCells";
+	Ext.CLIJ2_replaceIntensities(labelmapCells, emptyArrayImage, emptyCells);
+	Ext.CLIJ2_pull(emptyCells);
 
     // Build cytoplasm map (cell minus nucleus)
     cytoplasm = "cytoplasm";
@@ -95,7 +111,7 @@ function matchCellNucLabelMaps(cytoPath, nucPath, outNucDir, outCytoDir, filenam
     close("*");
 }
 
-// Batch over all cyto masks
+// Batch over all masks
 files = getFileList(inputCytomask);
 for (i = 0; i < files.length; i++) {
     matchCellNucLabelMaps(
