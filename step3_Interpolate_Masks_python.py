@@ -4,13 +4,13 @@
 #  * Author: Noshin Nawar, Boston University (noshin@bu.edu)
 # 
 # Description:
-#   - Loads binary mask TIFF stacks (z, y, x) for “cyto” and “nuclei” objects.
+#   - Loads binary mask TIFF stacks (x, y, t) for “cyto” and “nuclei” objects.
 #   - Finds z-slices where labels disappear and interpolates them by combining
 #     the nearest nonmissing slices (morphologically dilating/eroding as needed).
 #   - Saves out uint16 TIFF stacks with metadata for resolution & voxel size.
 #
 # Usage:
-#   1. Set `currDataset` (line 16), `maskSettings` (17), and `allData` (18).
+#   1. Set`maskSettings` and directory paths (lines 25-27).
 #   2. Edit `resolution` and `voxSize` to match your imaging calibration.
 #   3. Run—interpolated masks will appear under
 #      `baseDir/Python/<maskSettings>/Interpolated Masks_fullinterp/{Cyto,Nuclei}`.
