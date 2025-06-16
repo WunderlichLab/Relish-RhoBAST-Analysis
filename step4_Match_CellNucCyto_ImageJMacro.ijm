@@ -18,7 +18,7 @@
  *   - Fiji with CLIJ & CLIJ2 update sites enabled.
  *
  * Usage:
- *   1. Edit `allData`, `currDataset`, and `maskSettings` below.
+ *   1. Set `maskSettings` and directory paths (lines 26-28).
  *   2. Ensure cyto & nuclei mask filenames match.
  *   3. Run the macro.
  * ------------------------------------------------------------------------------ */
