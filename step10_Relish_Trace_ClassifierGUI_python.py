@@ -187,20 +187,14 @@ class CellTraceGUI:
 #%% # === MAIN LOOP ===
 
 # file paths
-# # Emma's computer (for testing)
-# file_path_df     = "C:\\Users\\emmar\\OneDrive\\Documents\\Boston University\\PhD\\Wunderlich Lab\\Python Data and Code\\Dataframes"
-# subcluster_traces_smooth = import_data(file_path_df, "goodcomp3_subcluster_traces_div_smooth")
-# all_traces_df    = flatten_trace_df(subcluster_traces_smooth)
+all_data         = "/path/to/your/data/2025-01-01_datasetName/"
+file_path_step9  = all_data + "Processed Traces"
+file_path_step10 = all_data + "SVM Classifier"
+all_traces_df    = import_data(file_path_step9, "all_traces_df")
 
-# # generalized (for MRE)
-# all_data         = "/path/to/your/data/2025-01-01_datasetName/"
-# file_path_step9  = all_data + "Processed Traces"
-# file_path_step10 = all_data + "SVM Classifier"
-# all_traces_df    = import_data(file_path_step9, "all_traces_df")
-
-# # run GUI
-# root = tk.Tk()
-# app = CellTraceGUI(root, all_traces_df, trace_behaviors, file_path_step10)
-# root.mainloop()
-# behavior_categories_df = app.df_categories
-# save_data(file_path_step10, behavior_categories_df, "behavior_categories_df")
+# run GUI
+root = tk.Tk()
+app = CellTraceGUI(root, all_traces_df, trace_behaviors, file_path_step10)
+root.mainloop()
+behavior_categories_df = app.df_categories
+save_data(file_path_step10, behavior_categories_df, "behavior_categories_df")
