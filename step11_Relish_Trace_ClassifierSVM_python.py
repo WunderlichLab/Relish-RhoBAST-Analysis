@@ -803,26 +803,17 @@ scale_range = {"Max Value": [1.0, 1.8],
                    "Area": [900, 1500]}
 
 # file paths
-# Emma's computer (for testing)
-file_path_df     = "C:\\Users\\emmar\\OneDrive\\Documents\\Boston University\\PhD\\Wunderlich Lab\\Python Data and Code\\Dataframes"
-file_path_SVMc   = "C:\\Users\\emmar\\OneDrive\\Documents\\Boston University\\PhD\\Wunderlich Lab\\Python Data and Code\\Dataframes\\SVM Classifier"
-file_path_rb     = "C:\\Users\\emmar\\OneDrive\\Documents\\Boston University\\PhD\\Wunderlich Lab\\Python Data and Code\\Dataframes\\RhoBAST"
-# subcluster_traces_smooth = import_data(file_path_rb, "goodcomp7_rel_AMP_subcluster_traces_div_smooth")
-# dict_trace_descriptors   = import_data(file_path_rb, "goodcomp7_rel_AMP_dict_trace_descriptors")
-# behavior_categories_df   = import_data(file_path_rb, "goodcomp7_trace_sorting_cell_categories_v5")
+all_data         = "/path/to/your/data/2025-01-01_datasetName/"
+file_path_step9  = all_data + "Processed Traces"
+file_path_step10 = all_data + "SVM Classifier"
+subcluster_traces_smooth = import_data(file_path_step9, "subcluster_traces_smooth")
+dict_trace_descriptors   = import_data(file_path_step9, "dict_trace_descriptors")
+behavior_categories_df   = import_data(file_path_step10, "behavior_categories_df")
 
-# # generalized (for MRE)
-# all_data         = "/path/to/your/data/2025-01-01_datasetName/"
-# file_path_step9  = all_data + "Processed Traces"
-# file_path_step10 = all_data + "SVM Classifier"
-# subcluster_traces_smooth = import_data(file_path_step9, "subcluster_traces_smooth")
-# dict_trace_descriptors   = import_data(file_path_step9, "dict_trace_descriptors")
-# behavior_categories_df   = import_data(file_path_step10, "behavior_categories_df")
-
-# # run complete SVM
-# dict_trace_descriptors_SVM, df_descriptor_vals_all, SVM_model, SVM_results_dict, percent_behaviors_df = run_SVM(subcluster_traces_smooth, dict_trace_descriptors, behavior_categories_df, param_grid = param_grid, random_cell = True, scale_range = scale_range)
-# save_data(file_path_step10, dict_trace_descriptors_SVM, "dict_trace_descriptors_SVM")
-# save_data(file_path_step10, df_descriptor_vals_all, "df_descriptor_vals_all")
-# save_data(file_path_step10, SVM_model, "SVM_model")
-# save_data(file_path_step10, SVM_results_dict, "SVM_results_dict")
-# save_data(file_path_step10, percent_behaviors_df, "percent_behaviors_df")
+# run complete SVM
+dict_trace_descriptors_SVM, df_descriptor_vals_all, SVM_model, SVM_results_dict, percent_behaviors_df = run_SVM(subcluster_traces_smooth, dict_trace_descriptors, behavior_categories_df, param_grid = param_grid, random_cell = True, scale_range = scale_range)
+save_data(file_path_step10, dict_trace_descriptors_SVM, "dict_trace_descriptors_SVM")
+save_data(file_path_step10, df_descriptor_vals_all, "df_descriptor_vals_all")
+save_data(file_path_step10, SVM_model, "SVM_model")
+save_data(file_path_step10, SVM_results_dict, "SVM_results_dict")
+save_data(file_path_step10, percent_behaviors_df, "percent_behaviors_df")
