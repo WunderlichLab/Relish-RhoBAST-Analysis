@@ -1104,58 +1104,51 @@ def import_data(file_path, object_name, file_type = ".pkl"):
 #%% # === MAIN LOOP ===
 
 # file paths
-# Emma's computer (for testing)
-curr_dataset    = "Intensities"
-all_data        = "C:\\Users\\emmar\\OneDrive\\Documents\\Boston University\\PhD\\Wunderlich Lab\\Python Data and Code\\Dataframes\\"
+all_data        = "/path/to/your/data/2025-01-01_datasetName/"
+curr_dataset    = "Python/<maskSettings>/IntensitiesDF"
 rootdir         = all_data + curr_dataset
-file_name       = "dict_intensities_alldatasets_goodcells_areas_101024"
-
-# # generalized (for MRE)
-# all_data        = "/path/to/your/data/2025-01-01_datasetName/"
-# curr_dataset    = "Python/<maskSettings>/IntensitiesDF"
-# rootdir         = all_data + curr_dataset
-# file_name       = "dictIntensitiesNomask_{datetimeStr}"
-# file_path_step9 = all_data + "Processed Traces"
+file_name       = "dictIntensitiesNomask_{datetimeStr}"
+file_path_step9 = all_data + "Processed Traces"
 
 # smoothing parameters
 sg_factor       = 5
 sg_order        = 2
 dist_factor     = 5
 
-# # run clustering
-# df_dict_org, df_dict_smooth_org, df_dict_smooth_copy, Z_dict = cluster_compiled(rootdir, file_name)
+# run clustering
+df_dict_org, df_dict_smooth_org, df_dict_smooth_copy, Z_dict = cluster_compiled(rootdir, file_name)
 
-# # retrieve subclusters
-# subclustersflat_smooth, thresholds                           = subclusters(df_dict_smooth_copy, Z_dict, "distance", dist_factor)
+# retrieve subclusters
+subclustersflat_smooth, thresholds                           = subclusters(df_dict_smooth_copy, Z_dict, "distance", dist_factor)
 
-# # make dendrograms
-# den_dict_smooth                                              = make_dendrogram(df_dict_smooth_copy, Z_dict)
-# den_dict_smooth_subclusters                                  = make_dendrogram_subclusters(df_dict_smooth_copy, Z_dict, subclustersflat_smooth, thresholds)
+# make dendrograms
+den_dict_smooth                                              = make_dendrogram(df_dict_smooth_copy, Z_dict)
+den_dict_smooth_subclusters                                  = make_dendrogram_subclusters(df_dict_smooth_copy, Z_dict, subclustersflat_smooth, thresholds)
 
-# # retrieve cluster identities
-# clusters_smooth                                              = retrieve_clusters(den_dict_smooth)
-# subclusters_smooth                                           = retrieve_clusters(den_dict_smooth_subclusters)
-# subclusters_smooth                                           = rename_subclusters(clusters_smooth, subclusters_smooth)
+# retrieve cluster identities
+clusters_smooth                                              = retrieve_clusters(den_dict_smooth)
+subclusters_smooth                                           = retrieve_clusters(den_dict_smooth_subclusters)
+subclusters_smooth                                           = rename_subclusters(clusters_smooth, subclusters_smooth)
 
-# # retrive cluster traces
-# cluster_traces                                               = get_cluster_traces(df_dict_org, clusters_smooth, comp = True)
-# cluster_traces_smooth                                        = get_cluster_traces(df_dict_smooth_org, clusters_smooth)
-# subcluster_traces                                            = get_cluster_traces(df_dict_org, subclusters_smooth, comp = True)
-# subcluster_traces_smooth                                     = get_cluster_traces(df_dict_smooth_org, subclusters_smooth)
-# subcluster_traces                                            = nest_subcluster_traces(subcluster_traces)
-# subcluster_traces_smooth                                     = nest_subcluster_traces(subcluster_traces_smooth)
+# retrive cluster traces
+cluster_traces                                               = get_cluster_traces(df_dict_org, clusters_smooth, comp = True)
+cluster_traces_smooth                                        = get_cluster_traces(df_dict_smooth_org, clusters_smooth)
+subcluster_traces                                            = get_cluster_traces(df_dict_org, subclusters_smooth, comp = True)
+subcluster_traces_smooth                                     = get_cluster_traces(df_dict_smooth_org, subclusters_smooth)
+subcluster_traces                                            = nest_subcluster_traces(subcluster_traces)
+subcluster_traces_smooth                                     = nest_subcluster_traces(subcluster_traces_smooth)
 
-# # flatten subcluster traces
-# all_traces_df                                                = flatten_trace_df(subcluster_traces_smooth)
-# times_smooth                                                 = list(all_traces_df.columns)
+# flatten subcluster traces
+all_traces_df                                                = flatten_trace_df(subcluster_traces_smooth)
+times_smooth                                                 = list(all_traces_df.columns)
 
-# # retrieve trace properties
-# dict_trace_descriptors                                       = trace_descriptors(df_dict_smooth_org, subclusters_smooth)
-# for treatment, treatment_df in dict_trace_descriptors.items():
-#     treatment_df.insert(1, "Behavior", "")
-    
-# # save data
-# save_data(file_path_step9, subcluster_traces_smooth, "subcluster_traces_smooth")
-# save_data(file_path_step9, dict_trace_descriptors, "dict_trace_descriptors")
-# save_data(file_path_step9, all_traces_df, "all_traces_df")
-# save_data(file_path_step9, times_smooth, "times_smooth")
+# retrieve trace properties
+dict_trace_descriptors                                       = trace_descriptors(df_dict_smooth_org, subclusters_smooth)
+for treatment, treatment_df in dict_trace_descriptors.items():
+    treatment_df.insert(1, "Behavior", "")
+   
+# save data
+save_data(file_path_step9, subcluster_traces_smooth, "subcluster_traces_smooth")
+save_data(file_path_step9, dict_trace_descriptors, "dict_trace_descriptors")
+save_data(file_path_step9, all_traces_df, "all_traces_df")
+save_data(file_path_step9, times_smooth, "times_smooth")
