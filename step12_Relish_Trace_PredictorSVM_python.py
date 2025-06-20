@@ -22,12 +22,10 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from scipy.integrate import trapezoid
 from collections import Counter
 from sklearn.svm import SVC
-from sklearn.feature_selection import RFECV, SelectKBest, chi2
+from sklearn.feature_selection import RFECV
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import MinMaxScaler
-from feature_engine.selection import RecursiveFeatureAddition
-from IPython.display import display
 
 
 # current date
@@ -932,24 +930,14 @@ def plot_prestim_traces(subcluster_traces_smooth, locations_dict, results_df, tr
 
 #%% # === MAIN LOOP ===
 
-# # file paths
-# Emma's computer (for testing)
-file_path_local  = "C:\\Users\\emmar\\OneDrive\\Documents\\Boston University\\PhD\\Wunderlich Lab\\Python Data and Code\\Dataframes"
-file_path_dict   = "C:\\Users\\emmar\\OneDrive\\Documents\\Boston University\\PhD\\Wunderlich Lab\\Python Data and Code\\Dataframes\\Intensities"
-file_path_SVMc   = "C:\\Users\\emmar\\OneDrive\\Documents\\Boston University\\PhD\\Wunderlich Lab\\Python Data and Code\\Dataframes\\SVM Classifier"
-file_path_rb     = "C:\\Users\\emmar\\OneDrive\\Documents\\Boston University\\PhD\\Wunderlich Lab\\Python Data and Code\\Dataframes\\RhoBAST"
-dict_intensities_area    = import_data(file_path_dict, "dict_intensities_alldatasets_goodcells_areas_101024", file_type = "")
-SVM_results_dict         = import_data(file_path_SVMc, "goodcomp3_SVM_results_dict_noIc")
-subcluster_traces_smooth = import_data(file_path_local, "goodcomp3_subcluster_traces_div_smooth")
-
-# # generalized (for MRE)
-# all_data         = "/path/to/your/data/2025-01-01_datasetName/"
-# file_path_step9  = all_data + "Processed Traces"
-# file_path_step10 = all_data + "SVM Classifier"
-# file_path_step12 = all_data + "SVM Predictor"
-# dict_intensities_area    = import_data()
-# SVM_results_dict         = import_data(file_path_step10, "SVM_results_dict")
-# subcluster_traces_smooth = import_data(file_path_step9, "subcluster_traces_smooth")
+# file paths
+all_data         = "/path/to/your/data/2025-01-01_datasetName/"
+file_path_step9  = all_data + "Processed Traces"
+file_path_step10 = all_data + "SVM Classifier"
+file_path_step12 = all_data + "SVM Predictor"
+dict_intensities_area    = import_data()
+SVM_results_dict         = import_data(file_path_step10, "SVM_results_dict")
+subcluster_traces_smooth = import_data(file_path_step9, "subcluster_traces_smooth")
 
 # extract data
 locations_dict_area = extract_data(dict_intensities_area)
@@ -968,8 +956,8 @@ predictor_SVM_model_RFE, predictor_SVM_best_params_RFE, predictor_SVM_results_df
 plot_prestim_traces(subcluster_traces_smooth, locations_dict_area, predictor_SVM_results_df_RFE, num_categories = "imm")
 plot_feature_traces(locations_dict_area, location_averages_df_area, SVM_results_dict, predictor_SVM_results_df_RFE, num_categories = "imm")
 
-# save_data(file_path_step12, predictor_SVM_model, "predictor_SVM_model")
-# save_data(file_path_step12, predictor_SVM_results_df, "predictor_SVM_results_df")
-# save_data(file_path_step12, threshold_features_RFE, "threshold_features_RFE")
-# save_data(file_path_step12, predictor_SVM_model_RFE, "predictor_SVM_model_RFE")
-# save_data(file_path_step12, predictor_SVM_results_df_RFE, "predictor_SVM_results_df_RFE")
+save_data(file_path_step12, predictor_SVM_model, "predictor_SVM_model")
+save_data(file_path_step12, predictor_SVM_results_df, "predictor_SVM_results_df")
+save_data(file_path_step12, threshold_features_RFE, "threshold_features_RFE")
+save_data(file_path_step12, predictor_SVM_model_RFE, "predictor_SVM_model_RFE")
+save_data(file_path_step12, predictor_SVM_results_df_RFE, "predictor_SVM_results_df_RFE")
