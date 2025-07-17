@@ -3,7 +3,7 @@
 Scripts to analyze the fluorescence microscopy time-series ND2 files resulting in the cell figures and videos in ["Heterogeneous NF-κB activation and enhancer features shape transcription in Drosophila immunity"](https://doi.org/10.1101/2025.05.19.654881).
 Included are a collection of ImageJ Macros, Jython/Python scripts, and ilastik classification files to be ran sequentially to process nuclear, Relish, and RhoBAST channel signals.
 
-  - Steps 1-4:  raw data processing scripts for confocal ND2 file z-projection, cell body/nuclei segmentation and tracking, mask interpolation, and cell body/nuclei label-map matching
+  - Steps 1-4:  raw data processing scripts for confocal ND2 file z-projection, cell body/nuclei segmentation and tracking, mask interpolation, and cell body/nuclei label-map matching. Cellpose custom masks for nuclear and cytoplasmic segmentation are included.
   - Steps 5-6:  example files for [ilastik's Pixel+Object classificaton](https://www.ilastik.org/documentation/) workflow for RhoBAST foci segmentation. Pixel classificaion file (Step 5) and TIF used for labeling are available upon request (file size exceeds limitation). 
   - Step 7:  Python script for compiling the nuclear Relish fraction and nuclear RhoBAST foci intensity for each cell across each time point.
   - Step 8:  optional ImageJ macro for easy visualization and interactive sorting of all cells based on overlaid masks for cytoplasm, nuclei, and RhoBAST foci (based on the criteria listed in Methods). 
@@ -14,7 +14,7 @@ Each step builds on the last, producing data and visualizations suitable for dow
 
 1. **Fiji/ImageJ** enabled with:
    -  CLIJ & CLIJ2 update sites
-   -  [TrackMate-Cellpose](https://imagej.net/plugins/trackmate/detectors/trackmate-cellpose)
+   -  [TrackMate-Cellpose](https://imagej.net/plugins/trackmate/detectors/trackmate-cellpose), [Helpful video for install](https://www.youtube.com/watch?v=A_PW_N0np9A)
 2. **Python 3.8+** with the following packages:  
    - `numpy`  
    - `scipy`  
