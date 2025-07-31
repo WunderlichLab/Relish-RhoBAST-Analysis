@@ -14,7 +14,7 @@ Each step builds on the last, producing data and visualizations suitable for dow
 
 1. **Fiji/ImageJ** enabled with:
    -  CLIJ & CLIJ2 update sites
-   -  [TrackMate-Cellpose](https://imagej.net/plugins/trackmate/detectors/trackmate-cellpose), [Helpful video for install](https://www.youtube.com/watch?v=A_PW_N0np9A)
+   -  [Install Cellpose](https://github.com/MouseLand/cellpose), [Link Cellpose to Fiji](https://imagej.net/plugins/trackmate/detectors/trackmate-cellpose), [Helpful video for install](https://www.youtube.com/watch?v=A_PW_N0np9A)
 2. **Python 3.8+** with the following packages:  
    - `numpy`  
    - `scipy`  
