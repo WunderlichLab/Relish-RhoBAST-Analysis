@@ -1,7 +1,7 @@
 # Support Vector Machine Analysis
 
 ## About the Project 
-Scripts to run the Relish nuclear localization Classifier and Predictor SVMs in "[Heterogeneous NF-κB activation and enhancer features shape transcription in Drosophila immunity]"(https://www.biorxiv.org/content/10.1101/2025.05.19.654881v1).
+Scripts to run the Relish nuclear localization Classifier and Predictor SVMs in "[Heterogeneous NF-κB activation and enhancer features shape transcription in Drosophila immunity]"(https://www.biorxiv.org/content/10.1101/2025.05.19.654881v1](https://www.cell.com/biophysj/fulltext/S0006-3495%2826%2900013-5)".
 
 ### Built with:
 - [Anaconda](https://www.anaconda.com/)
