@@ -28,6 +28,12 @@ datetime_str = time.strftime("%m%d%y_%H:%M")
 gitdir = 'G:/path/' 
 #!!! Update path file!!!
 
+# Create temp file containing figure outputs
+for i in range(1, 7):
+    path = os.path.join(gitdir, 'Temp Output', f'Fig {i}')
+    if not os.path.exists(path):
+        os.makedirs(path)
+
 files_import = gitdir+'Figure 1 Files/'
 fig_output = gitdir+'Temp Output/Fig 1/'
 
