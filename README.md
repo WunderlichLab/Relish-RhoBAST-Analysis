@@ -1,6 +1,6 @@
 # Relish-RhoBAST Image Analysis
 
-Scripts to analyze the fluorescence microscopy time-series ND2 files resulting in the cell figures and videos in ["Heterogeneous NF-κB activation and enhancer features shape transcription in Drosophila immunity"](https://doi.org/10.1101/2025.05.19.654881).
+Scripts to analyze the fluorescence microscopy time-series ND2 files resulting in the cell figures and videos in ["Heterogeneous NF-κB activation and enhancer features shape transcription in Drosophila immunity"](https://www.cell.com/biophysj/fulltext/S0006-3495%2826%2900013-5).
 Included are a collection of ImageJ Macros, Jython/Python scripts, and ilastik classification files to be ran sequentially to process nuclear, Relish, and RhoBAST channel signals.
 
   - Steps 1-4:  raw data processing scripts for confocal ND2 file z-projection, cell body/nuclei segmentation and tracking, mask interpolation, and cell body/nuclei label-map matching. Cellpose custom masks for nuclear and cytoplasmic segmentation are included.
