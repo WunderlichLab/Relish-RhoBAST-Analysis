@@ -144,9 +144,6 @@ fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
 #%% Fig 6B-D Violin Plots
 
 # Plot the violin plot
-action = 'plot'
-#action = 'save'
-
 #---------------------------------------------------------
 #Pick one
 
@@ -272,12 +269,9 @@ annotator.apply_and_annotate()
 
 plt.tight_layout()
 
-if action=='plot':
-    plt.show()
-elif action=='save':
 #---------------------------------------- Save
-    savename = fig_output+'Fig 6_'+figname+'.png'#
-    plt.savefig(savename, bbox_inches = 'tight', dpi=1000)
+savename = fig_output+'Fig 6_'+figname+'.png'#
+plt.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
 #%% Figure S8: all time fit on and off durations to exponentials
 
