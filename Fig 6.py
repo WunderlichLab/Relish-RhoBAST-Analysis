@@ -362,7 +362,7 @@ for tw_idx, tw in enumerate(['T1', 'T2', 'T3']):
     fig.text(center_x, pos1.y1 + 0.05, tw, ha='center', va='bottom', fontsize=fsize+2, fontweight='bold')
 
 
-plt.show()
+#plt.show()
 
 #---------------------------------------- Save
 figname = 'OnOffExpFit'
