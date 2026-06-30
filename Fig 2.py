@@ -30,6 +30,10 @@ gitdir = 'G:/path/'
 #!!! Update path file!!!
 
 files_import = gitdir+'Figure 2 Files/'
+#!!! Download large file!!!
+# Follow link in ReadMe to download large file "goodcomp3_locations_dict_area" and save to 'gitdir+'Figure 2 Files/Predictor Outputs 11.18/'
+#!!! Download large file!!!
+
 fig_output = gitdir+'Temp Output/Fig 2/'
 
 plt.rcParams['font.family'] = 'Arial'
