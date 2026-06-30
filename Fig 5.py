@@ -335,7 +335,7 @@ plt.show()
 #---------------------------------------- Save
 figname = 'Peak KDE ROC'
 savename = fig_output+'Fig 5CD_'+figname+'.png'#
-#fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
+fig.savefig(savename, bbox_inches = 'tight', dpi=1000)
 
 #%% DeLong test with multiple comparison corrction
 # Get all unique pairs of models
