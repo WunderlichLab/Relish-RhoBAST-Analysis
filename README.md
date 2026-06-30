@@ -15,14 +15,8 @@ Each step builds on the last, producing data and visualizations suitable for dow
 1. **Fiji/ImageJ** enabled with:
    -  CLIJ & CLIJ2 update sites
    -  [Install Cellpose](https://github.com/MouseLand/cellpose), [Link Cellpose to Fiji](https://imagej.net/plugins/trackmate/detectors/trackmate-cellpose), [Helpful video for install](https://www.youtube.com/watch?v=A_PW_N0np9A)
-2. **Python 3.8+** with the following packages:  
-   - `numpy`  
-   - `scipy`  
-   - `scikit-image`  
-   - `tifffile`  
-   - `pandas`  
-   - `microfilm` (for `microplot`)  
-   - `matplotlib`
+2. **Python 3.8+**  
+   - This repository was developed and tested using Python 3.12. The provided requirements.txt includes all external packages required to run the figure generation and analysis scripts. To ensure reproducibility across systems, core scientific and visualization libraries (e.g., NumPy, SciPy, pandas, scikit-learn, matplotlib, seaborn) are explicitly version-pinned. Imaging and bioinformatics-related dependencies (e.g., tifffile, Pillow, scikit-image, microfilm) are also included. Non-essential development environment packages (e.g., Jupyter, Spyder, conda tooling) are intentionally excluded to keep the dependency list minimal and portable.
 3. **ilastik** [interactive learning and segmentation toolkit](https://www.ilastik.org/)
 
 4. **Directory structure** (customize `allData` and `datasetName` in each script):
