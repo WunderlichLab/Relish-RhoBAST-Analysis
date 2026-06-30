@@ -1,5 +1,5 @@
 # Figure Generation
-- Scripts and required files to generate all main figures in ["Heterogeneous NF-κB activation and enhancer features shape transcription in Drosophila immunity"](https://www.cell.com/biophysj/fulltext/S0006-3495%2826%2900013-5).
+- Scripts and required files to generate all main figures in ["Heterogeneous NF-κB activation and enhancer features shape transcription in Drosophila immunity"](https://www.cell.com/biophysj/fulltext/S0006-3495%2826%2900013-5). Please install all required packages using the provided `requirements.txt` file to ensure compatibility with the scripts and reproduce the analysis environment.
 
 - Links for cell TIFs + masks:
   - Figure 1: https://www.cellimagelibrary.org/groups/57531
