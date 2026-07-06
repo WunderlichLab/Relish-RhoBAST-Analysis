@@ -85,7 +85,7 @@ Scripts to run the Relish nuclear localization Classifier and Predictor SVMs in 
 ```
 git clone https://github.com/WunderlichLab/Relish-RhoBAST-Analysis.git
 ```
-2. Install Python 3.8+ with all necessary packages.
+2. Install Python 3.8+ with all necessary packages (see requirements_steps9-12.txt).
 3. Change the git remote url to avoid accidental pushes to the base project.
 ```
 git remote set-url origin https://github.com/github_username/Relish-RhoBAST-Analysis.git
