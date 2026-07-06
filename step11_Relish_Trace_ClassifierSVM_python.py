@@ -13,10 +13,12 @@ Description: Trace behavior sorting SVM
 
 # packages
 import copy
+from IPython.display import JSON
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import pickle
 import random
 from scipy.stats import uniform, randint
 import seaborn as sns
@@ -109,7 +111,7 @@ def trace_descriptor_subset(dict_trace_descriptors, cell_categories_df):
     return dict_subset
 
 
-def prep_descriptor_vals_SVM(dict_trace_descriptors, key_params = True, drop_nans = True, weights_dict = None, scale_range = None):
+def prep_descriptor_vals_SVM(dict_trace_descriptors, key_params = True, drop_nans = True, weights_dict = None, collapse_imm = False, scale_range = None):
     """
     Prepares and formats dict_trace_descriptors for use in SVM.
 
@@ -151,6 +153,7 @@ def prep_descriptor_vals_SVM(dict_trace_descriptors, key_params = True, drop_nan
     """
     
     treatments             = [treatment for treatment in list(dict_trace_descriptors.keys()) if treatment != "Averages"]
+    # print(treatments)
     if key_params:
         descriptors            = ["Behavior",
                                   "Max Value",
@@ -165,6 +168,7 @@ def prep_descriptor_vals_SVM(dict_trace_descriptors, key_params = True, drop_nan
                                   "Half Max",
                                   "Half Time",
                                   "Area",
+                                  "Delta Time",
                                   "Max In Time",
                                   "Max In Rate",
                                   "Max Out Time",
@@ -177,32 +181,43 @@ def prep_descriptor_vals_SVM(dict_trace_descriptors, key_params = True, drop_nan
     for treatment in treatments:
         treatment_df       = dict_trace_descriptors[treatment]
         cells              = treatment_df.index.tolist()
+        # print(treatment, cells)
         
         for index, row in treatment_df.iterrows():
             # add treatment to cell name
             cell_name                                             = treatment + " " + index
+            # print(cell_name)
             
             # extract data
-            descriptor_vals_SVM_df.loc[cell_name, "Behavior"]     = treatment_df.loc[index, "Behavior"]
-            descriptor_vals_SVM_df.loc[cell_name, "Max Value"]    = treatment_df.loc[index, "Max Value"]
-            descriptor_vals_SVM_df.loc[cell_name, "Max Time"]     = treatment_df.loc[index, "Max Time"]
-            descriptor_vals_SVM_df.loc[cell_name, "Half Time"]    = treatment_df.loc[index, "Half Time"]
-            descriptor_vals_SVM_df.loc[cell_name, "Area"]         = treatment_df.loc[index, "Area"]
+            if key_params:
+                for descriptor in descriptors:
+                    descriptor_vals_SVM_df.loc[cell_name, descriptor]     = treatment_df.loc[index, descriptor]
+            # descriptor_vals_SVM_df.loc[cell_name, "Max Value"]    = treatment_df.loc[index, "Max Value"]
+            # descriptor_vals_SVM_df.loc[cell_name, "Max Time"]     = treatment_df.loc[index, "Max Time"]
+            # descriptor_vals_SVM_df.loc[cell_name, "Half Time"]    = treatment_df.loc[index, "Half Time"]
+            # descriptor_vals_SVM_df.loc[cell_name, "Area"]         = treatment_df.loc[index, "Area"]
     
             if not key_params:
-                descriptor_vals_SVM_df.loc[cell_name, "Half Max"]     = treatment_df.loc[index, "Half Max"]
-                descriptor_vals_SVM_df.loc[cell_name, "Max In Time"]  = treatment_df.loc[index, "Max In"][0]
-                descriptor_vals_SVM_df.loc[cell_name, "Max In Rate"]  = treatment_df.loc[index, "Max In"][1]
-                descriptor_vals_SVM_df.loc[cell_name, "Max Out Time"] = treatment_df.loc[index, "Max Out"][0]
-                descriptor_vals_SVM_df.loc[cell_name, "Max Out Rate"] = treatment_df.loc[index, "Max Out"][1]
-                descriptor_vals_SVM_df.loc[cell_name, "Peaks"]        = treatment_df.loc[index, "Peaks"]
-            
+                for descriptor in descriptors:
+                    descriptor_vals_SVM_df.loc[cell_name, descriptor]     = treatment_df.loc[index, descriptor]
+                # descriptor_vals_SVM_df.loc[cell_name, "Half Max"]     = treatment_df.loc[index, "Half Max"]
+                # descriptor_vals_SVM_df.loc[cell_name, "Max In Time"]  = treatment_df.loc[index, "Max In"][0]
+                # descriptor_vals_SVM_df.loc[cell_name, "Max In Rate"]  = treatment_df.loc[index, "Max In"][1]
+                # descriptor_vals_SVM_df.loc[cell_name, "Max Out Time"] = treatment_df.loc[index, "Max Out"][0]
+                # descriptor_vals_SVM_df.loc[cell_name, "Max Out Rate"] = treatment_df.loc[index, "Max Out"][1]
+                # descriptor_vals_SVM_df.loc[cell_name, "Peaks"]        = treatment_df.loc[index, "Peaks"]
+        
+    # collapse "Immediate" categories if collapse_imm = True
+    if collapse_imm:
+        descriptor_vals_SVM_df["Behavior"] = descriptor_vals_SVM_df["Behavior"].replace({"Ic": "I", "Ip": "I", "Id": "I"})
+        
     if drop_nans:
         total_cells  = descriptor_vals_SVM_df.shape[0]
         descriptor_vals_SVM_df.dropna(inplace = True)
         total_nans   = total_cells - descriptor_vals_SVM_df.shape[0]
         percent_nans = (total_nans / total_cells) * 100
-        
+        # print(f"{percent_nans:.3f}% of cells were dropped due to containing NaN values.")
+    
     # update features (X) and targets (y)
     X_SVM_df    = descriptor_vals_SVM_df.drop(columns = ["Behavior"])
     y_SVM_df    = descriptor_vals_SVM_df["Behavior"]
@@ -231,6 +246,10 @@ def prep_descriptor_vals_SVM(dict_trace_descriptors, key_params = True, drop_nan
         for descriptor in list(weights_dict.keys()):
             X_SVM_df[descriptor] = X_SVM_df[descriptor] * weights_dict[descriptor]
     
+    # print("X_SVM_df:")
+    # display(X_SVM_df)
+    # print("y_SVM_df:")
+    # display(y_SVM_df)
     
     if scale_range is None:
         return descriptor_vals_SVM_df, X_SVM_df, y_SVM_df, scaler
@@ -402,7 +421,7 @@ def percent_behaviors(dict_trace_descriptors, plot = None):
 
 #%% functions to build, train, and run SVM on complete dataset
 
-def plot_sample_and_all_traces(subcluster_traces_smooth, results_dict, cell_categories_df, dict_trace_descriptors_SVM, treatment = "all", random_cell = True, cell_names = None, stim_time = 30):
+def plot_sample_and_all_traces(subcluster_traces_smooth, results_dict, cell_categories_df, dict_trace_descriptors_SVM, treatment = "all", random_cell = True, cell_names = None, show_title = False, stim_time = 30):
     """
     Plots both a sample trace and traces for all cells classified into each behavior category.
 
@@ -435,21 +454,27 @@ def plot_sample_and_all_traces(subcluster_traces_smooth, results_dict, cell_cate
     None.
 
     """
-    if cell_names != None and random_cell == True:
-        raise ValueError("random_cell must be False if cell_name is provided.")  
+    if cell_names != None and random == True:
+        raise ValueError("random must be False if cell_name is provided.")  
     
     colors          = ["#DC143C", "#FF6F61", "indigo", "dodgerblue", "grey"]
     color_palette   = sns.color_palette(colors)
     behavior_colors = {"I": color_palette[0], "Id": color_palette[1], "G": color_palette[2], "D": color_palette[3], "N": color_palette[4]}
     behavior_keys   = {"I": "Immediate", "Id": "Immediate with decay", "G": "Gradual", "D": "Delayed", "N": "Nonresponsive"}
+    
+    behavior_names  = cell_categories_df["Category"].unique()
+    # print(behavior_names)
+    behavior_keys   = {k: v for k, v in behavior_keys.items() if v in behavior_names}
+    # print(behavior_keys)
     behavior_rev    = {v: k for k, v in behavior_keys.items()}
+    
     
     # flatten trace data
     all_traces_df   = flatten_trace_df(subcluster_traces_smooth)
     times           = list(all_traces_df.columns)
     
     # initialize figure
-    fig, axs    = plt.subplots(2, 5, figsize = (30, 10), sharex = True, sharey = True)
+    fig, axs    = plt.subplots(2, len(behavior_keys), figsize = ((len(behavior_keys) + 1) * 5, 10), sharex = True, sharey = True)
         
     # extract dataframe of all cells
     results_df  = results_dict["All cells"]
@@ -457,7 +482,7 @@ def plot_sample_and_all_traces(subcluster_traces_smooth, results_dict, cell_cate
     # convert cell_categories_df to dict and reorder
     cell_categories_dict = cell_categories_df.set_index("Category")["Cells"].to_dict()
     
-    for n, (SVM_behavior, behavior_name) in enumerate(behavior_keys.items()):
+    for n, (SVM_behavior, behavior_name) in enumerate(behavior_keys.items()):        
         # plot all traces for each behavior
         behavior_traces = pd.DataFrame()
         behavior_color  = behavior_colors[SVM_behavior]
@@ -476,24 +501,35 @@ def plot_sample_and_all_traces(subcluster_traces_smooth, results_dict, cell_cate
         
         # set axes labels and title
         title_color = behavior_color
+        # title_color = "black"
+        # axs[1, n].set_title(f"{behavior_name} (n = {num_cells})", fontsize = 16, color = title_color)
+        # axs[1, n].set_xlabel("Time (min)", fontsize = 14)
+        # axs[1, n].set_ylabel("Nuclear Relish fraction (fold change)", fontsize = 14)
         axs[1, n].tick_params(axis = "both", labelsize = 14)
         axs[1, n].text(y = 1.9, x = times[-1] - 60, s = f"n = {num_cells}", ha = "center", va = "center", fontsize = 16)
         
         # highlight pre- and post-stim times
         y_min, y_max = axs[1, n].get_ylim()
         prestim  = patches.Rectangle((0, 0.6), stim_time, 0.025, color = "black")
+        # poststim = patches.Rectangle((30, 0.6), times[-1] - 30, 0.025, color = "white", edgecolor = "black")
         hatch = patches.Rectangle((stim_time, 0.6), times[-1] - stim_time, 0.025, edgecolor="black", facecolor="none", hatch='///')
         axs[1, n].add_patch(prestim)
+        # axs[1, n].add_patch(poststim)
         axs[1, n].add_patch(hatch)
+        # axs[1, n].add_patch(patches.Rectangle((0, 0.6), 30, 0.025, color = "darkgrey", alpha = 0.5))
+        # axs[1, n].add_patch(patches.Rectangle((30, 0.6), times[-1], 0.025, color = "black", alpha = 0.5))
+        # axs[1, n].arrow(stim_time, 0.65, 0, -0.04, length_includes_head = True, )
         
         # plot test trace for each behavior
         behavior_cells = cell_categories_dict[behavior_name]
         if random_cell:
             cell_name = random.choice(behavior_cells)
+            # cell_name = all_traces_df.index.to_series().sample(n = 1).index[0]
         else:
             cell_name = cell_names[SVM_behavior]
         print(cell_name)
         tmt, cell = cell_name.split(maxsplit = 1)
+        # print(f"{cell_name}\n{tmt}: {cell}")
         
         # retrieve timecourse data
         cell_trace = all_traces_df.loc[cell_name].values
@@ -504,15 +540,18 @@ def plot_sample_and_all_traces(subcluster_traces_smooth, results_dict, cell_cate
         axs[0, n].plot(times, cell_trace, color = behavior_color)
         
         # set title and labels
+        # axs[0, n].set_title(f"{behavior_name}\n{cell_name}", fontsize = 16, color = behavior_color)
         axs[0, n].set_title(f"{behavior_name}", fontsize = 20, color = behavior_color)
+        # axs[0, n].set_xlabel("Time (min)", fontsize = 14)
+        # axs[0, n].set_ylabel("Nuclear Relish fraction (fold change)", fontsize = 14)
         axs[0, n].tick_params(axis = "both", labelsize = 14)
         
         # set y-axis limits and ticks
         axs[0, n].set_ylim(0.6, 2.0)
         axs[0, n].set_yticks([0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0])
         
-        # plot horizontal line at 1.2
-        axs[0, n].axhline(y = 1.2, color = "grey", linestyle = "dashed", linewidth = 0.5)
+        # plot horizontal line at 1.15
+        axs[0, n].axhline(y = 1.15, color = "grey", linestyle = "dashed", linewidth = 0.5)
         
         max_val = cell_data["Max Value"]
         max_time = cell_data["Max Time"]
@@ -562,7 +601,7 @@ def plot_sample_and_all_traces(subcluster_traces_smooth, results_dict, cell_cate
                     linewidth      = 0.5,
                     mutation_scale = 2.5))
             
-            # add text annotation
+            # Add text annotation
             axs[0, n].text(times[-1] + 35, (fin_val + max_val) / 2, "Δ FC", color = behavior_color, ha = 'center', va = 'center', fontsize = 14, rotation = 90)
         
         else:
@@ -572,20 +611,33 @@ def plot_sample_and_all_traces(subcluster_traces_smooth, results_dict, cell_cate
                 axs[0, n].text(y = 1.85, x = (times[-1] / 2) - 10, s = f"t = {int(times[-1] / 2)}", ha ='center', va = 'center', fontsize = 14, color = 'grey', fontstyle = "italic", rotation = 90)
                 t430_val = cell_trace[int(times[-1] / 2)]
                 
-                sig_filter = [(index, value) for index, value in enumerate(cell_trace) if value >= 1.2]
+                # axs[0, n].plot(430, t430_val, "go", color = "black")
+                # axs[0, n].text(y = t430_val + 0.03, x = 425, s = f"$t_{{430}}$", ha = "right", va = "center", fontsize = 10, color = "black")
+                
+                sig_filter = [(index, value) for index, value in enumerate(cell_trace) if value >= 1.15]
                 sig_time, sig_val = sig_filter[0]
+                # print(f"{behavior_name} ({cell_name}): [{sig_val}, {sig_time}]")
                 axs[0, n].plot(sig_time, sig_val, "go", color = "black")
-                axs[0, n].text(y = sig_val + 0.03, x = sig_time - 5, s = "FC ≥ 1.2", ha = "right", va = "center", fontsize = 14, color = "black")
+                axs[0, n].text(y = sig_val + 0.03, x = sig_time - 5, s = "FC ≥ 1.15", ha = "right", va = "center", fontsize = 14, color = "black")
     
     fig.supxlabel("Time (min)", fontsize = 16)
+    # fig.supylabel("Nuclear Relish fraction (fold change)", fontsize = 14)
     fig.text(0, 0.5, 'Nuclear Relish fraction (fold change)', va='center', ha='center', fontsize=16, rotation='vertical')
+    
+    if show_title:
+        treatment_cells = len([cell for cell in list(results_df.index) if treatment in cell])
+        total_cells     = all_traces_df.shape[0]
+        if treatment == "all":
+            plt.suptitle(f"SVM behavior classification (n = {total_cells})", fontsize = 20)
+        else:
+            plt.suptitle(f"SVM behavior classification ({treatment}, n = {treatment_cells})", fontsize = 20)      
     
     plt.tight_layout(pad = 2)     
     plt.savefig(f"classified_traces_{formatted_date}", dpi = 700)
     plt.show()
     
 
-def run_SVM(subcluster_traces_smooth, dict_trace_descriptors, cell_categories_df, param_grid, treatment = "all", random_cell = False, cell_names = None, keep_SVM = True, return_vals = True, stim_time = 30, scale_range = None):
+def run_SVM(subcluster_traces_smooth, dict_trace_descriptors, cell_categories_df, param_grid, treatment = "all", remove_Ic = True, collapse_imm = False, random = False, random_cell = True, cell_names = None, keep_SVM = True, return_vals = True, stim_time = 30, scale_range = None):
     """
     Trains and runs SVM on all cells using test_SVM_params.
     Plots traces by category using plot_sample_and_all_traces and generates percent behaviors barplot using percent_behaviors.
@@ -645,32 +697,47 @@ def run_SVM(subcluster_traces_smooth, dict_trace_descriptors, cell_categories_df
     
     tmts = [tmt for tmt in subcluster_traces_smooth]
     
+    # remove "Immediate with continued" behavior category
+    if remove_Ic:
+        cell_categories_df.loc[cell_categories_df["Category"].isin(["Immediate with plateau", "Immediate with continued"]), "Category"] = "Immediate"
+        cell_categories_df_noIc = cell_categories_df.groupby("Category", as_index = False).agg(lambda x: [item for sublist in x for item in sublist])
+        # display(cell_categories_df_noIc)
+    
     # prep dict to store results
     results_dict = dict.fromkeys(["Classified cells", "Unclassified cells", "All cells"])
     
-    dict_trace_descriptors_subset                      = trace_descriptor_subset(dict_trace_descriptors, cell_categories_df)
+    # extract data for classified cells
+    if not remove_Ic:
+        dict_trace_descriptors_subset                      = trace_descriptor_subset(dict_trace_descriptors, cell_categories_df)
+    else:
+        dict_trace_descriptors_subset                      = trace_descriptor_subset(dict_trace_descriptors, cell_categories_df_noIc)
         
     # display(dict_trace_descriptors_subset)
     if scale_range is None:
-        df_descriptor_vals_train, X_df_train, y_ser_train, scaler_train = prep_descriptor_vals_SVM(dict_trace_descriptors_subset, scale_range = scale_range)
-        df_descriptor_vals_all, X_df_all, y_ser_all, scaler             = prep_descriptor_vals_SVM(dict_trace_descriptors, scale_range = scale_range)
+        df_descriptor_vals_train, X_df_train, y_ser_train, scaler_train = prep_descriptor_vals_SVM(dict_trace_descriptors_subset, collapse_imm = collapse_imm, scale_range = scale_range)
+        df_descriptor_vals_all, X_df_all, y_ser_all, scaler             = prep_descriptor_vals_SVM(dict_trace_descriptors, collapse_imm = collapse_imm, scale_range = scale_range)
     else:
-        df_descriptor_vals_train, X_df_train, y_ser_train  = prep_descriptor_vals_SVM(dict_trace_descriptors_subset, scale_range = scale_range)
-        df_descriptor_vals_all, X_df_all, y_ser_all        = prep_descriptor_vals_SVM(dict_trace_descriptors, scale_range = scale_range)
+        df_descriptor_vals_train, X_df_train, y_ser_train  = prep_descriptor_vals_SVM(dict_trace_descriptors_subset, collapse_imm = collapse_imm, scale_range = scale_range)
+        df_descriptor_vals_all, X_df_all, y_ser_all        = prep_descriptor_vals_SVM(dict_trace_descriptors, collapse_imm = collapse_imm, scale_range = scale_range)
     
     # update "Behavior" columns of non-classified cells to None
     classified_cells                                       = set(df_descriptor_vals_train.index)
     df_descriptor_vals_all.loc[~df_descriptor_vals_all.index.isin(classified_cells), "Behavior"] = None
     y_ser_all.loc[~y_ser_all.index.isin(classified_cells)] = None
+    # print(df_descriptor_vals_all)
+    # print(y_ser_all)
     
     # extract data for non-classified cells
     df_descriptor_vals_unk                                 = df_descriptor_vals_all[df_descriptor_vals_all["Behavior"].isna()]
     unclassified_cells                                     = set(df_descriptor_vals_unk.index)
     X_df_unk                                               = X_df_all.loc[X_df_all.index.isin(unclassified_cells)]
+    # print(df_descriptor_vals_unk)
+    # print(X_df_unk)
     
     # train and optimize SVM on classified cells
-    svm_model, best_params, best_score                     = test_SVM_params(X_df_train, y_ser_train, param_grid = param_grid, grid = True)
+    svm_model, best_params, best_score                     = test_SVM_params(X_df_train, y_ser_train, param_grid = param_grid, random = random)
     y_pred_train                                           = svm_model.predict(X_df_train)
+    # print(f"y_pred_train (len = {len(y_pred_train)}): {y_pred_train}")
     
     # prep results_dict for plotting
     kernel                                                 = best_params["kernel"] 
@@ -748,7 +815,8 @@ def run_SVM(subcluster_traces_smooth, dict_trace_descriptors, cell_categories_df
     
     dict_trace_descriptors_SVM = copy.deepcopy(dict_trace_descriptors)
     
-    del dict_trace_descriptors_SVM["Averages"]
+    if "Averages" in dict_trace_descriptors_SVM:
+        del dict_trace_descriptors_SVM["Averages"]
     
     # update "Behavior" column in dict_trace_descriptors_SVM
     for tmt, tmt_df in dict_trace_descriptors_SVM.items():
@@ -771,8 +839,7 @@ def run_SVM(subcluster_traces_smooth, dict_trace_descriptors, cell_categories_df
         # update dict
         dict_trace_descriptors_SVM[tmt] = tmt_df
     
-    # plot traces
-    plot_sample_and_all_traces(subcluster_traces_smooth, results_dict, cell_categories_df, dict_trace_descriptors_SVM, random_cell = True, stim_time = stim_time)
+    plot_sample_and_all_traces(subcluster_traces_smooth, results_dict, cell_categories_df, dict_trace_descriptors_SVM, random_cell = random_cell, cell_names = cell_names, stim_time = stim_time)
     
     # plot stacked bar plot
     percents_df = percent_behaviors(dict_trace_descriptors_SVM, plot = "vert")
@@ -780,9 +847,10 @@ def run_SVM(subcluster_traces_smooth, dict_trace_descriptors, cell_categories_df
     if return_vals:
         
         if scale_range is None:
-            return dict_trace_descriptors_SVM, df_descriptor_vals_all, scaler, svm_model, results_dict, percents_df
+            return dict_trace_descriptors_SVM, df_descriptor_vals_all, X_df_all, X_df_train, scaler, svm_model, results_dict, percents_df
         else:
-            return dict_trace_descriptors_SVM, df_descriptor_vals_all, svm_model, results_dict, percents_df
+            # return dict_trace_descriptors_SVM, df_descriptor_vals_all, X_df_train, svm_model, results_dict, percents_df
+            return dict_trace_descriptors_SVM, df_descriptor_vals_all, X_df_all, X_df_train, svm_model, results_dict, percents_df
 
 
 #%% # === MAIN LOOP ===
@@ -809,9 +877,10 @@ file_path_step10 = all_data + "SVM Classifier"
 subcluster_traces_smooth = import_data(file_path_step9, "subcluster_traces_smooth")
 dict_trace_descriptors   = import_data(file_path_step9, "dict_trace_descriptors")
 behavior_categories_df   = import_data(file_path_step10, "behavior_categories_df")
+behavior_categories_df   = behavior_categories_df[behavior_categories_df["Cells"].apply(lambda x: isinstance(x, list) and len(x) > 0)]
 
 # run complete SVM
-dict_trace_descriptors_SVM, df_descriptor_vals_all, SVM_model, SVM_results_dict, percent_behaviors_df = run_SVM(subcluster_traces_smooth, dict_trace_descriptors, behavior_categories_df, param_grid = param_grid, random_cell = True, scale_range = scale_range)
+dict_trace_descriptors_SVM, df_descriptor_vals_all, SVM_model, X_df_all, X_df_train, SVM_results_dict, percent_behaviors_df = run_SVM(subcluster_traces_smooth, dict_trace_descriptors, behavior_categories_df, param_grid = param_grid, random_cell = True, scale_range = scale_range)
 save_data(file_path_step10, dict_trace_descriptors_SVM, "dict_trace_descriptors_SVM")
 save_data(file_path_step10, df_descriptor_vals_all, "df_descriptor_vals_all")
 save_data(file_path_step10, SVM_model, "SVM_model")
