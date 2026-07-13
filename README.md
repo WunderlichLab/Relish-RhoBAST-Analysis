@@ -7,7 +7,7 @@
       - Dense Imaging (T1, T2, T3): https://www.cellimagelibrary.org/groups/57534
       - Sparse Imaging: https://www.cellimagelibrary.org/groups/57548  
 - Links for files that exceed GitHub size limitation:
-  - Fig 2 code's [goodcomp3_locations_dict_area.pkl file](https://drive.google.com/file/d/1466sle5CYxscnlKvONHJSqz_ltZJ-9-2/view?usp=sharing)
+  - Fig 2 code's [goodcomp3_locations_dict_area.pkl file](https://doi.org/10.6084/m9.figshare.32978252)
     to be saved in file path: 'gitdir+'Figure 2 Files/Predictor Outputs 11.18/'
 
 - Please make sure to update the line below to your save directory:
