@@ -1,4 +1,7 @@
-# Relish-RhoBAST Image Analysis
+# Relish-RhoBAST Analysis
+ This repository contains all analysis scripts for data presented in ["Heterogeneous NF-κB activation and enhancer features shape transcription in Drosophila immunity"](https://www.cell.com/biophysj/fulltext/S0006-3495%2826%2900013-5).
+
+## [Confocal Image Analysis Pipeline](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/Relish-RhoBAST-Image-Analysis)
 
 Scripts to analyze the fluorescence microscopy time-series ND2 files resulting in the cell figures and videos in ["Heterogeneous NF-κB activation and enhancer features shape transcription in Drosophila immunity"](https://www.cell.com/biophysj/fulltext/S0006-3495%2826%2900013-5).
 Included are a collection of ImageJ Macros, Jython/Python scripts, and ilastik classification files to be ran sequentially to process nuclear, Relish, and RhoBAST channel signals.
@@ -10,7 +13,7 @@ Included are a collection of ImageJ Macros, Jython/Python scripts, and ilastik c
 
 Each step builds on the last, producing data and visualizations suitable for downstream analysis and figure plotting.     
 
-## Prerequisites & Setup
+Prerequisites & Setup
 
 1. **Fiji/ImageJ** enabled with:
    -  CLIJ & CLIJ2 update sites
@@ -49,3 +52,11 @@ Each step builds on the last, producing data and visualizations suitable for dow
         └── <maskSettings>/
             ├── Good Cells/
             └── Bad Cells/
+            
+## [Support Vector Machine Analysis](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/SVM)
+- Scripts to run Support Vector Machine analysis of:
+  - Relish spatiotemporal classification
+  - Pre-stimulus predictive classification
+  
+## [Figure Generation](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/Figure-Generation)
+- Scripts to plot figures from Python dictionaries produced in Image Analysis Pipeline
