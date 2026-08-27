@@ -13,7 +13,7 @@ Included are a collection of ImageJ Macros, Jython/Python scripts, and ilastik c
 
 Each step builds on the last, producing data and visualizations suitable for downstream analysis and figure plotting.     
 
-Prerequisites & Setup
+**Prerequisites & Setup:**
 
 1. **Fiji/ImageJ** enabled with:
    -  CLIJ & CLIJ2 update sites
@@ -52,8 +52,9 @@ Prerequisites & Setup
         └── <maskSettings>/
             ├── Good Cells/
             └── Bad Cells/
+```
             
-## [Support Vector Machine Analysis](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/SVM)
+## **[Support Vector Machine Analysis](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/SVM)**
 - Scripts to run Support Vector Machine analysis of:
   - Relish spatiotemporal classification
   - Pre-stimulus predictive classification
