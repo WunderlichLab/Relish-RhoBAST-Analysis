@@ -2,12 +2,61 @@
  This repository contains all analysis scripts for data presented in ["Heterogeneous NF-κB activation and enhancer features shape transcription in Drosophila immunity"](https://www.cell.com/biophysj/fulltext/S0006-3495%2826%2900013-5).
 
 ## [Confocal Image Analysis Pipeline](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/Relish-RhoBAST-Image-Analysis)
-- Scripts to analyze the single-cell fluorescence microscopy time-lapse signals of labeled nuclei, Relish, and RhoBAST
 
+Scripts to analyze the fluorescence microscopy time-series ND2 files resulting in the cell figures and videos in ["Heterogeneous NF-κB activation and enhancer features shape transcription in Drosophila immunity"](https://www.cell.com/biophysj/fulltext/S0006-3495%2826%2900013-5).
+Included are a collection of ImageJ Macros, Jython/Python scripts, and ilastik classification files to be ran sequentially to process nuclear, Relish, and RhoBAST channel signals.
+
+  - Steps 1-4:  raw data processing scripts for confocal ND2 file z-projection, cell body/nuclei segmentation and tracking, mask interpolation, and cell body/nuclei label-map matching. Cellpose custom masks for nuclear and cytoplasmic segmentation are included.
+  - Steps 5-6:  example files for [ilastik's Pixel+Object classificaton](https://www.ilastik.org/documentation/) workflow for RhoBAST foci segmentation. Pixel classificaion file (Step 5) and TIF used for labeling are available upon request (file size exceeds limitation). 
+  - Step 7:  Python script for compiling the nuclear Relish fraction and nuclear RhoBAST foci intensity for each cell across each time point.
+  - Step 8:  optional ImageJ macro for easy visualization and interactive sorting of all cells based on overlaid masks for cytoplasm, nuclei, and RhoBAST foci (based on the criteria listed in Methods). 
+
+Each step builds on the last, producing data and visualizations suitable for downstream analysis and figure plotting.     
+
+Prerequisites & Setup
+
+1. **Fiji/ImageJ** enabled with:
+   -  CLIJ & CLIJ2 update sites
+   -  [Install Cellpose](https://github.com/MouseLand/cellpose), [Link Cellpose to Fiji](https://imagej.net/plugins/trackmate/detectors/trackmate-cellpose), [Helpful video for install](https://www.youtube.com/watch?v=A_PW_N0np9A)
+2. **Python 3.8+**  
+   - This repository was developed and tested using Python 3.12. The provided requirements.txt includes all external packages required to run the figure generation and analysis scripts. To ensure reproducibility across systems, core scientific and visualization libraries (e.g., NumPy, SciPy, pandas, scikit-learn, matplotlib, seaborn) are explicitly version-pinned. Imaging and bioinformatics-related dependencies (e.g., tifffile, Pillow, scikit-image, microfilm) are also included. Non-essential development environment packages (e.g., Jupyter, Spyder, conda tooling) are intentionally excluded to keep the dependency list minimal and portable.
+3. **ilastik** [interactive learning and segmentation toolkit](https://www.ilastik.org/)
+
+4. **Directory structure** (customize `allData` and `datasetName` in each script):
+```text
+/path/to/your/data/                    # <allData>
+└── 2025-01-01_DatasetName/            # <datasetName>
+    ├── ND2_Split_Series/              # Step 1 Input (raw .ND2 series)
+    ├── TIF_Split_Series_MaxZ/         # Step 1 Output (Max-Z projections)
+    ├── Trackmate Files/
+    │   └── <maskSettings>/
+    │       ├── Cyto Fiji File/        # Step 2 Output (Cellpose+TrackMate overlays)
+    │       ├── Cyto Masks/            # Step 2 Output (binary masks)
+    │       ├── Cyto Matched Masks/    # Step 4 Output (nuclei reassigned → cyto IDs)
+    │       ├── Nuclei Fiji File/      # Step 2 Output (Cellpose+TrackMate overlays)
+    │       ├── Nuclei Masks/          # Step 2 Output (binary masks)
+    │       └── Nuclei Matched Masks/  # Step 4 Output (nuclei reassigned → cyto IDs)
+    ├── Python/
+    │   └── <maskSettings>/
+    │       ├── Interpolated Masks_fullinterp/
+    │       │   ├── Cyto/               # Step 3 Output (interpolated cell masks)
+    │       │   └── Nuclei/             # Step 3 Output (interpolated cell masks)
+    │       └── IntensitiesDF/
+    │           ├── dictIntensities_{datetimeStr}.pkl
+    │           └── dictIntensitiesNomask_{datetimeStr}.pkl
+    │                                   # Step 7 Output (pickle intensity dicts)
+    ├── ilastik Outputs/
+    │   ├── Probabilities/              # Step 5 Output (ilastik Pixel Classification)
+    │   └── Aptamer Masks/              # Step 6 Output (ilastik Object Classification)
+    └── Sorted Cells/                   # Step 8 Output (manual QC)
+        └── <maskSettings>/
+            ├── Good Cells/
+            └── Bad Cells/
+            
 ## [Support Vector Machine Analysis](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/SVM)
 - Scripts to run Support Vector Machine analysis of:
   - Relish spatiotemporal classification
   - Pre-stimulus predictive classification
+  
 ## [Figure Generation](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/Figure-Generation)
 - Scripts to plot figures from Python dictionaries produced in Image Analysis Pipeline
-
