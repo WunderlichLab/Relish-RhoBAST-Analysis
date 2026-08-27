@@ -28,6 +28,8 @@ Scripts to run the Relish nuclear localization Classifier and Predictor SVMs in 
     - `tiffile`
     - `time`
     - `tkinter`
+    
+    See [requirements_steps9-12.txt](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/blob/SVM/requirements_steps9-12.txt) for specific package requirements.
 1. **Directory structure** (customize `allData` and `datasetName` in each script):
 ```
 /path/to/your/data/                           # <allData>
@@ -85,7 +87,7 @@ Scripts to run the Relish nuclear localization Classifier and Predictor SVMs in 
 ```
 git clone https://github.com/WunderlichLab/Relish-RhoBAST-Analysis.git
 ```
-2. Install Python 3.8+ with all necessary packages (see requirements_steps9-12.txt).
+2. Install Python 3.8+ with all necessary packages (see [requirements_steps9-12.txt](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/blob/SVM/requirements_steps9-12.txt)).
 3. Change the git remote url to avoid accidental pushes to the base project.
 ```
 git remote set-url origin https://github.com/github_username/Relish-RhoBAST-Analysis.git
