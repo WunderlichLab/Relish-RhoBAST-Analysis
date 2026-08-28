@@ -28,6 +28,35 @@ Each step builds on the last, producing data and visualizations suitable for dow
 └── 2025-01-01_DatasetName/            # <datasetName>
     ├── ND2_Split_Series/              # Step 1 Input (raw .ND2 series)
     ├── TIF_Split_Series_MaxZ/         # Step 1 Output (Max-Z projections)
+=======
+### Prerequisites:
+1. **Python 3.8+** with the following packages:
+    - `collections`
+    - `copy`
+    - `datetime`
+    - `matplotlib`
+    - `numpy`
+    - `pandas`
+    - `pickle`
+    - `PIL`
+    - `random`
+    - `re`
+    - `scipy`
+    - `seaborn`
+    - `sklearn`
+    - `statistics`
+    - `tiffile`
+    - `time`
+    - `tkinter`
+    
+    See [requirements_steps9-12.txt](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/blob/SVM/requirements_steps9-12.txt) for specific package requirements.
+1. **Directory structure** (customize `allData` and `datasetName` in each script):
+```
+/path/to/your/data/                           # <allData>
+└── 2025-01-01_datasetName/                   # <datasetName>
+    ├── ND2_Split_Series/                     # Step 1 Input (raw .ND2 series)
+    ├── TIF_Split_Series_MaxZ/                # Step 1 Output (Max-Z projections)
+>>>>>>> SVM
     ├── Trackmate Files/
     │   └── <maskSettings>/
     │       ├── Cyto Fiji File/        # Step 2 Output (Cellpose+TrackMate overlays)
@@ -53,11 +82,54 @@ Each step builds on the last, producing data and visualizations suitable for dow
             ├── Good Cells/
             └── Bad Cells/
 ```
-            
-## **[Support Vector Machine Analysis](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/SVM)**
-- Scripts to run Support Vector Machine analysis of:
-  - Relish spatiotemporal classification
-  - Pre-stimulus predictive classification
+
+## [Support Vector Machine Analysis](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/SVM)
+### Installation:
+1. Clone the repo.
+```
+git clone https://github.com/WunderlichLab/Relish-RhoBAST-Analysis.git
+```
+2. Install Python 3.8+ with all necessary packages (see [requirements_steps9-12.txt](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/blob/SVM/requirements_steps9-12.txt)).
+3. Change the git remote url to avoid accidental pushes to the base project.
+```
+git remote set-url origin https://github.com/github_username/Relish-RhoBAST-Analysis.git
+git remote -v`
+```
+4. Run Steps 1-8 of the Relish-RhoBAST image analysis.
+
+### Roadmap
+- [ ] Step 9 (`step9_Relish_TracePreProcessing_python.py`): Python script for preprocessing Relish nuclear timecourse data and extracting trace descriptor.
+- [ ] Step 10 (`step10_Relish_Trace_ClassifierGUI_python.py`): Python script creating GUI for manual trace classification of single-cell traces for SVM training set.
+- [ ] Step 11 (`step11_Relish_Trace_ClassifierSVM_python.py`): Python script for SVM trace behavior classification based on long-timecourse post-stimulus single-cell Relish traces.
+- [ ] Step 12 (`step12_Relish_Trace_PredictorSVM_python.py`): Python script for SVM trace behavior prediction based on short-timecourse pre-stimulus single-cell Relish traces.
+
+Each step builds on the last, producing data and visualizations suitable for downstream analysis and figure plotting.
+
+Step 12 is designed to be run on Relish-only data (i.e. no RhoBAST transcriptional data), and Steps 9-11 are tailored accordingly.  Modified code for running Steps 9-11 on Relish-RhoBAST data is available upon request.
+
   
 ## [Figure Generation](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/Figure-Generation)
 - Scripts to plot figures from Python dictionaries produced in Image Analysis Pipeline
+
+# Contributions
+Contributions and suggestions are greatly appreciated.  If you have a suggestion to make this project better, please fork the repo and create a pull request.
+
+1. Fork the project.
+2. Create your feature branch.
+```
+git checkout -b feature/NewFeature
+```
+3. Commit your changes.
+```
+git commit -m 'Add some NewFeature'
+```
+4. Push to the branch.
+```
+git push origin feature/NewFeature
+```
+5. Open a pull request.
+
+# Contact
+
+# Acknowledgements
+- `README` template created by [othneildrew](https://github.com/othneildrew/Best-README-Template/blob/main/BLANK_README.md).
