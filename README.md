@@ -28,35 +28,6 @@ Each step builds on the last, producing data and visualizations suitable for dow
 └── 2025-01-01_DatasetName/            # <datasetName>
     ├── ND2_Split_Series/              # Step 1 Input (raw .ND2 series)
     ├── TIF_Split_Series_MaxZ/         # Step 1 Output (Max-Z projections)
-=======
-### Prerequisites:
-1. **Python 3.8+** with the following packages:
-    - `collections`
-    - `copy`
-    - `datetime`
-    - `matplotlib`
-    - `numpy`
-    - `pandas`
-    - `pickle`
-    - `PIL`
-    - `random`
-    - `re`
-    - `scipy`
-    - `seaborn`
-    - `sklearn`
-    - `statistics`
-    - `tiffile`
-    - `time`
-    - `tkinter`
-    
-    See [requirements_steps9-12.txt](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/blob/SVM/requirements_steps9-12.txt) for specific package requirements.
-1. **Directory structure** (customize `allData` and `datasetName` in each script):
-```
-/path/to/your/data/                           # <allData>
-└── 2025-01-01_datasetName/                   # <datasetName>
-    ├── ND2_Split_Series/                     # Step 1 Input (raw .ND2 series)
-    ├── TIF_Split_Series_MaxZ/                # Step 1 Output (Max-Z projections)
->>>>>>> SVM
     ├── Trackmate Files/
     │   └── <maskSettings>/
     │       ├── Cyto Fiji File/        # Step 2 Output (Cellpose+TrackMate overlays)
@@ -84,6 +55,78 @@ Each step builds on the last, producing data and visualizations suitable for dow
 ```
 
 ## [Support Vector Machine Analysis](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/SVM)
+### Prerequisites:
+1. **Python 3.8+** with the following packages:
+    - `collections`
+    - `copy`
+    - `datetime`
+    - `matplotlib`
+    - `numpy`
+    - `pandas`
+    - `pickle`
+    - `PIL`
+    - `random`
+    - `re`
+    - `scipy`
+    - `seaborn`
+    - `sklearn`
+    - `statistics`
+    - `tiffile`
+    - `time`
+    - `tkinter`
+    
+    See [requirements_steps9-12.txt](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/blob/SVM/requirements_steps9-12.txt) for specific package requirements.
+1. **Directory structure** (customize `allData` and `datasetName` in each script):
+```text
+/path/to/your/data/                           # <allData>
+└── 2025-01-01_datasetName/                   # <datasetName>
+    ├── ND2_Split_Series/                     # Step 1 Input (raw .ND2 series)
+    ├── TIF_Split_Series_MaxZ/                # Step 1 Output (Max-Z projections)
+    ├── Trackmate Files/
+    │   └── <maskSettings>/
+    │       ├── Cyto Fiji File/               # Step 2 Output (Cellpose+TrackMate overlays)
+    │       ├── Cyto Masks/                   # Step 2 Output (binary masks)
+    │       ├── Cyto Matched Masks/           # Step 4 Output (nuclei reassigned → cyto IDs)
+    │       ├── Nuclei Fiji File/             # Step 2 Output (Cellpose+TrackMate overlays)
+    │       ├── Nuclei Masks/                 # Step 2 Output (binary masks)
+    │       └── Nuclei Matched Masks/         # Step 4 Output (nuclei reassigned → cyto IDs)
+    ├── Python/
+    │   └── <maskSettings>/
+    │       ├── Interpolated Masks_fullinterp/
+    │       │   ├── Cyto/                      # Step 3 Output (interpolated cell masks)
+    │       │   └── Nuclei/                    # Step 3 Output (interpolated cell masks)
+    │       └── IntensitiesDF/
+    │           ├── dictIntensities_{datetimeStr}.pkl
+    │           └── dictIntensitiesNomask_{datetimeStr}.pkl
+    │                                          # Step 7 Output (pickle intensity dicts)
+    ├── ilastik Outputs/
+    │   ├── Probabilities/                     # Step 5 Output (ilastik Pixel Classification)
+    │   └── Aptamer Masks/                     # Step 6 Output (ilastik Object Classification)
+    └── Sorted Cells/                          # Step 8 Output (manual QC)
+    │   └── <maskSettings>/
+    │       ├── Good Cells/
+    │       └── Bad Cells/
+    └── Processed Traces/
+    │   ├── subcluster_traces_smooth.pkl       # Step 9 Output (smoothed traces by subcluster)
+    │   ├── dict_trace_descriptors.pkl         # Step 9 Output (extraced trace descriptors)
+    │   ├── all_traces_df.pkl                  # Step 9 Output (all smoothed traces)
+    │   └── times_smooth.pkl                   # Step 9 Output (smoothed timepoints)
+    └── SVM Classifier/
+    │   ├── cell_categories.csv                # Step 10 Output (manually sorted training set - .csv)
+    │   ├── behavior_categories_df.pkl         # Step 10 Output (manually sorted training set - .pkl)
+    │   ├── dict_trace_descriptors_SVM.pkl     # Step 11 Output (dict_trace_descriptors with "Behavior" column populated)
+    │   ├── df_descriptor_vals_all.pkl         # Step 11 Output (flattened dict_trace_descriptors containing only key features)
+    │   ├── SVM_model.pkl                      # Step 11 Output (classifier SVM model)
+    │   ├── SVM_results_dict.pkl               # Step 11 Output (SVM results)
+    │   └── percent_behaviors_df.pkl           # Step 11 Output (percent cells per behavior category)
+    └── SVM Predictor/
+        ├── predictor_SVM_model.pkl            # Step 12 Output (predictor SVM model)
+        ├── predictor_SVM_results_df.pkl       # Step 12 Output (predictor SVM results)
+        ├── threshold_features_RFE.pkl         # Step 12 Output (RFE-optimized predictor SVM features)
+        ├── predictor_SVM_model_RFE.pkl        # Step 12 Output (post-RFE predictor SVM model)
+        └── predictor_SVM_results_df_RFE.pkl   # Step 12 Output (post-RFE predictor SVM results)
+```
+
 ### Installation:
 1. Clone the repo.
 ```
@@ -106,7 +149,6 @@ git remote -v`
 Each step builds on the last, producing data and visualizations suitable for downstream analysis and figure plotting.
 
 Step 12 is designed to be run on Relish-only data (i.e. no RhoBAST transcriptional data), and Steps 9-11 are tailored accordingly.  Modified code for running Steps 9-11 on Relish-RhoBAST data is available upon request.
-
   
 ## [Figure Generation](https://github.com/WunderlichLab/Relish-RhoBAST-Analysis/tree/Figure-Generation)
 - Scripts to plot figures from Python dictionaries produced in Image Analysis Pipeline
